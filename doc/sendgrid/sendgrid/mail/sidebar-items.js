@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Mail","This is a representation of a valid SendGrid message. It has support for all of the fields in the V2 API."]]});
