@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["RouteInfo",""],["Router","The Router struct contains the information for your app to route requests properly based on their HTTP method and matching route. It allows the use of a custom 404 handler if desired but provides a default as well."]],"type":[["Captures",""],["RouterFn",""]]});
