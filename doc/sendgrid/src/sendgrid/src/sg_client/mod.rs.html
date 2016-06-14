@@ -171,28 +171,17 @@
 <span id="127">127</span>
 <span id="128">128</span>
 <span id="129">129</span>
-<span id="130">130</span>
-<span id="131">131</span>
-<span id="132">132</span>
-<span id="133">133</span>
-<span id="134">134</span>
-<span id="135">135</span>
-<span id="136">136</span>
-<span id="137">137</span>
-<span id="138">138</span>
-<span id="139">139</span>
-<span id="140">140</span>
-<span id="141">141</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>mail</span>::<span class='ident'>Mail</span>;
 
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>borrow</span>::<span class='ident'>Cow</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>Read</span>;
 
 <span class='kw'>use</span> <span class='ident'>hyper</span>::<span class='ident'>Client</span>;
 <span class='kw'>use</span> <span class='ident'>hyper</span>::<span class='ident'>error</span>::<span class='ident'>Error</span>;
 <span class='kw'>use</span> <span class='ident'>hyper</span>::<span class='ident'>header</span>::{<span class='ident'>Authorization</span>, <span class='ident'>Bearer</span>, <span class='ident'>ContentType</span>, <span class='ident'>Headers</span>, <span class='ident'>UserAgent</span>};
 <span class='kw'>use</span> <span class='ident'>hyper</span>::<span class='ident'>mime</span>::{<span class='ident'>Mime</span>, <span class='ident'>TopLevel</span>, <span class='ident'>SubLevel</span>};
+
+<span class='kw'>use</span> <span class='ident'>url</span>::<span class='ident'>form_urlencoded</span>::<span class='ident'>Serializer</span>;
 
 <span class='kw'>static</span> <span class='ident'>API_URL</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span> <span class='op'>=</span> <span class='string'>&quot;https://api.sendgrid.com/api/mail.send.json?&quot;</span>;
 
@@ -202,77 +191,57 @@
     <span class='ident'>api_key</span>: <span class='ident'>String</span>,
 }
 
-<span class='kw'>fn</span> <span class='ident'>make_post_body</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>mut</span> <span class='ident'>mail_info</span>: <span class='ident'>Mail</span>) <span class='op'>-&gt;</span> <span class='ident'>Cow</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>str</span><span class='op'>&gt;</span> {
-    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>body</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>new</span>();
+<span class='comment'>// Given a form value and a key, generate the correct key.</span>
+<span class='kw'>fn</span> <span class='ident'>make_form_key</span>(<span class='ident'>form</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>key</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>String</span> {
+    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>value</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>new</span>();
+    <span class='ident'>value</span>.<span class='ident'>push_str</span>(<span class='ident'>form</span>);
+    <span class='ident'>value</span>.<span class='ident'>push</span>(<span class='string'>&#39;[&#39;</span>);
+    <span class='ident'>value</span>.<span class='ident'>push_str</span>(<span class='ident'>key</span>);
+    <span class='ident'>value</span>.<span class='ident'>push</span>(<span class='string'>&#39;]&#39;</span>);
 
-    <span class='comment'>// The leading POST data should not start with an ampersand.</span>
-    <span class='kw'>let</span> <span class='ident'>first_to</span> <span class='op'>=</span> <span class='ident'>mail_info</span>.<span class='ident'>to</span>.<span class='ident'>remove</span>(<span class='number'>0</span>);
-    <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='string'>&quot;to[]=&quot;</span>);
-    <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>first_to</span>[..]);
+    <span class='ident'>value</span>
+}
 
-    <span class='comment'>// Now, add anymore if need be.</span>
+<span class='comment'>// Use the URL form encoder to properly generate the body used in the mail send request.</span>
+<span class='kw'>fn</span> <span class='ident'>make_post_body</span>(<span class='kw-2'>mut</span> <span class='ident'>mail_info</span>: <span class='ident'>Mail</span>) <span class='op'>-&gt;</span> <span class='ident'>String</span> {
+    <span class='kw'>let</span> <span class='ident'>body</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>new</span>();
+    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>encoder</span> <span class='op'>=</span> <span class='ident'>Serializer</span>::<span class='ident'>new</span>(<span class='ident'>body</span>);
+
     <span class='kw'>for</span> <span class='ident'>to</span> <span class='kw'>in</span> <span class='ident'>mail_info</span>.<span class='ident'>to</span>.<span class='ident'>iter</span>() {
-        <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='string'>&quot;&amp;to[]=&quot;</span>);
-        <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>to</span>[..]);
+        <span class='ident'>encoder</span>.<span class='ident'>append_pair</span>(<span class='string'>&quot;to[]&quot;</span>, <span class='kw-2'>&amp;</span><span class='ident'>to</span>);
     }
 
     <span class='kw'>for</span> <span class='ident'>to_name</span> <span class='kw'>in</span> <span class='ident'>mail_info</span>.<span class='ident'>to_names</span>.<span class='ident'>iter</span>() {
-        <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='string'>&quot;&amp;toname[]=&quot;</span>);
-        <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>to_name</span>[..]);
+        <span class='ident'>encoder</span>.<span class='ident'>append_pair</span>(<span class='string'>&quot;toname[]&quot;</span>, <span class='kw-2'>&amp;</span><span class='ident'>to_name</span>);
     }
 
     <span class='kw'>for</span> <span class='ident'>cc</span> <span class='kw'>in</span> <span class='ident'>mail_info</span>.<span class='ident'>cc</span>.<span class='ident'>iter</span>() {
-        <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='string'>&quot;&amp;cc[]=&quot;</span>);
-        <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>cc</span>[..]);
+        <span class='ident'>encoder</span>.<span class='ident'>append_pair</span>(<span class='string'>&quot;cc[]&quot;</span>, <span class='kw-2'>&amp;</span><span class='ident'>cc</span>);
     }
 
     <span class='kw'>for</span> <span class='ident'>bcc</span> <span class='kw'>in</span> <span class='ident'>mail_info</span>.<span class='ident'>bcc</span>.<span class='ident'>iter</span>() {
-        <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='string'>&quot;&amp;bcc[]=&quot;</span>);
-        <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>bcc</span>[..]);
+        <span class='ident'>encoder</span>.<span class='ident'>append_pair</span>(<span class='string'>&quot;bcc[]&quot;</span>, <span class='kw-2'>&amp;</span><span class='ident'>bcc</span>);
     }
 
     <span class='kw'>for</span> (<span class='ident'>attachment</span>, <span class='ident'>contents</span>) <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='ident'>mail_info</span>.<span class='ident'>attachments</span> {
-        <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='string'>&quot;&amp;files[&quot;</span>);
-        <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='ident'>attachment</span>);
-        <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='string'>&quot;]=&quot;</span>);
-        <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='ident'>contents</span>);
+        <span class='ident'>encoder</span>.<span class='ident'>append_pair</span>(<span class='kw-2'>&amp;</span><span class='ident'>make_form_key</span>(<span class='string'>&quot;files&quot;</span>, <span class='ident'>attachment</span>), <span class='ident'>contents</span>);
     }
 
     <span class='kw'>for</span> (<span class='ident'>id</span>, <span class='ident'>value</span>) <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='ident'>mail_info</span>.<span class='ident'>content</span> {
-        <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='string'>&quot;&amp;content[&quot;</span>);
-        <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='ident'>id</span>);
-        <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='string'>&quot;]=&quot;</span>);
-        <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='ident'>value</span>);
+        <span class='ident'>encoder</span>.<span class='ident'>append_pair</span>(<span class='kw-2'>&amp;</span><span class='ident'>make_form_key</span>(<span class='string'>&quot;content&quot;</span>, <span class='ident'>id</span>), <span class='ident'>value</span>);
     }
 
-    <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='string'>&quot;&amp;from=&quot;</span>);
-    <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>mail_info</span>.<span class='ident'>from</span>);
+    <span class='ident'>encoder</span>.<span class='ident'>append_pair</span>(<span class='string'>&quot;from&quot;</span>, <span class='kw-2'>&amp;</span><span class='ident'>mail_info</span>.<span class='ident'>from</span>);
+    <span class='ident'>encoder</span>.<span class='ident'>append_pair</span>(<span class='string'>&quot;subject&quot;</span>, <span class='kw-2'>&amp;</span><span class='ident'>mail_info</span>.<span class='ident'>subject</span>);
+    <span class='ident'>encoder</span>.<span class='ident'>append_pair</span>(<span class='string'>&quot;html&quot;</span>, <span class='kw-2'>&amp;</span><span class='ident'>mail_info</span>.<span class='ident'>html</span>);
+    <span class='ident'>encoder</span>.<span class='ident'>append_pair</span>(<span class='string'>&quot;text&quot;</span>, <span class='kw-2'>&amp;</span><span class='ident'>mail_info</span>.<span class='ident'>text</span>);
+    <span class='ident'>encoder</span>.<span class='ident'>append_pair</span>(<span class='string'>&quot;fromname&quot;</span>, <span class='kw-2'>&amp;</span><span class='ident'>mail_info</span>.<span class='ident'>from_name</span>);
+    <span class='ident'>encoder</span>.<span class='ident'>append_pair</span>(<span class='string'>&quot;replyto&quot;</span>, <span class='kw-2'>&amp;</span><span class='ident'>mail_info</span>.<span class='ident'>reply_to</span>);
+    <span class='ident'>encoder</span>.<span class='ident'>append_pair</span>(<span class='string'>&quot;date&quot;</span>, <span class='kw-2'>&amp;</span><span class='ident'>mail_info</span>.<span class='ident'>date</span>);
+    <span class='ident'>encoder</span>.<span class='ident'>append_pair</span>(<span class='string'>&quot;headers&quot;</span>, <span class='kw-2'>&amp;</span><span class='ident'>mail_info</span>.<span class='ident'>make_header_string</span>());
+    <span class='ident'>encoder</span>.<span class='ident'>append_pair</span>(<span class='string'>&quot;x-smtpapi&quot;</span>, <span class='kw-2'>&amp;</span><span class='ident'>mail_info</span>.<span class='ident'>x_smtpapi</span>);
 
-    <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='string'>&quot;&amp;subject=&quot;</span>);
-    <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>mail_info</span>.<span class='ident'>subject</span>);
-
-    <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='string'>&quot;&amp;html=&quot;</span>);
-    <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>mail_info</span>.<span class='ident'>html</span>);
-
-    <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='string'>&quot;&amp;text=&quot;</span>);
-    <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>mail_info</span>.<span class='ident'>text</span>);
-
-    <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='string'>&quot;&amp;fromname=&quot;</span>);
-    <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>mail_info</span>.<span class='ident'>from_name</span>);
-
-    <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='string'>&quot;&amp;replyto=&quot;</span>);
-    <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>mail_info</span>.<span class='ident'>reply_to</span>);
-
-    <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='string'>&quot;&amp;date=&quot;</span>);
-    <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>mail_info</span>.<span class='ident'>date</span>[..]);
-
-    <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='string'>&quot;&amp;headers=&quot;</span>);
-    <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>mail_info</span>.<span class='ident'>make_header_string</span>()[..]);
-
-    <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='string'>&quot;&amp;x-smtpapi=&quot;</span>);
-    <span class='ident'>body</span>.<span class='ident'>push_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>mail_info</span>.<span class='ident'>x_smtpapi</span>[..]);
-
-    <span class='ident'>body</span>.<span class='ident'>into</span>()
+    <span class='ident'>encoder</span>.<span class='ident'>finish</span>()
 }
 
 <span class='kw'>impl</span> <span class='ident'>SGClient</span> {
@@ -301,10 +270,10 @@
             <span class='ident'>UserAgent</span>(<span class='string'>&quot;sendgrid-rs&quot;</span>.<span class='ident'>to_owned</span>())
         );
 
-        <span class='kw'>let</span> <span class='ident'>post_body</span> <span class='op'>=</span> <span class='ident'>make_post_body</span>(<span class='ident'>mail_info</span>).<span class='ident'>into_owned</span>();
+        <span class='kw'>let</span> <span class='ident'>post_body</span> <span class='op'>=</span> <span class='ident'>make_post_body</span>(<span class='ident'>mail_info</span>);
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>client</span>.<span class='ident'>post</span>(<span class='ident'>API_URL</span>)
             .<span class='ident'>headers</span>(<span class='ident'>headers</span>)
-            .<span class='ident'>body</span>(<span class='kw-2'>&amp;</span><span class='ident'>post_body</span>[..])
+            .<span class='ident'>body</span>(<span class='kw-2'>&amp;</span><span class='ident'>post_body</span>)
             .<span class='ident'>send</span>());
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>body</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>new</span>();
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>res</span>.<span class='ident'>read_to_string</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>body</span>));
@@ -321,9 +290,16 @@
     <span class='ident'>m</span>.<span class='ident'>add_text</span>(<span class='string'>&quot;It works&quot;</span>);
 
     <span class='kw'>let</span> <span class='ident'>body</span> <span class='op'>=</span> <span class='ident'>make_post_body</span>(<span class='ident'>m</span>);
-    <span class='kw'>let</span> <span class='ident'>comparison</span> <span class='op'>=</span> <span class='string'>&quot;to[]=test@example.com&amp;from=me@example.com&amp;subject=Test\
-        &amp;html=&amp;text=It works&amp;fromname=&amp;replyto=&amp;date=&amp;headers={}&amp;x-smtpapi=&quot;</span>;
-    <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>body</span>, <span class='ident'>comparison</span>);
+    <span class='kw'>let</span> <span class='ident'>want</span> <span class='op'>=</span> <span class='string'>&quot;to%5B%5D=test%40example.com&amp;from=me%40example.com&amp;subject=Test&amp;\
+                html=&amp;text=It+works&amp;fromname=&amp;replyto=&amp;date=&amp;headers=%7B%7D&amp;x-smtpapi=&quot;</span>;
+    <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>body</span>, <span class='ident'>want</span>);
+}
+
+<span class='attribute'>#[<span class='ident'>test</span>]</span>
+<span class='kw'>fn</span> <span class='ident'>test_proper_key</span>() {
+    <span class='kw'>let</span> <span class='ident'>want</span> <span class='op'>=</span> <span class='string'>&quot;files[test.jpg]&quot;</span>;
+    <span class='kw'>let</span> <span class='ident'>got</span> <span class='op'>=</span> <span class='ident'>make_form_key</span>(<span class='string'>&quot;files&quot;</span>, <span class='string'>&quot;test.jpg&quot;</span>);
+    <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>want</span>, <span class='ident'>got</span>);
 }
 </pre>
 </section>
