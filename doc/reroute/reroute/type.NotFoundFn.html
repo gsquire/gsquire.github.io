@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `reroute` crate.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, reroute">
+    <meta name="description" content="API documentation for the Rust `NotFoundFn` type in crate `reroute`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, NotFoundFn">
 
-    <title>reroute - Rust</title>
+    <title>reroute::NotFoundFn - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
@@ -28,7 +28,7 @@
 
     <nav class="sidebar">
         
-        <p class='location'></p><script>window.sidebarCurrent = {name: 'reroute', ty: 'mod', relpath: '../'};</script>
+        <p class='location'><a href='index.html'>reroute</a></p><script>window.sidebarCurrent = {name: 'NotFoundFn', ty: 'type', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </nav>
 
     <nav class="sub">
@@ -42,45 +42,13 @@
         </form>
     </nav>
 
-    <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>reroute</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content type">
+<h1 class='fqn'><span class='in-band'><a href='index.html'>reroute</a>::<wbr><a class='type' href=''>NotFoundFn</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-0' class='srclink' href='../src/reroute/src/lib.rs.html#1-214' title='goto source code'>[src]</a></span></h1>
-<h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class='struct' href='struct.RouteInfo.html'
-                                  title='reroute::RouteInfo'>RouteInfo</a></td>
-                           <td class='docblock short'>
-                                
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class='struct' href='struct.Router.html'
-                                  title='reroute::Router'>Router</a></td>
-                           <td class='docblock short'>
-                                <p>The Router struct contains the information for your app to route requests
-properly based on their HTTP method and matching route. It allows the use
-of a custom 404 handler if desired but provides a default as well.</p>
-                           </td>
-                       </tr></table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class='type' href='type.Captures.html'
-                                  title='reroute::Captures'>Captures</a></td>
-                           <td class='docblock short'>
-                                
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class='type' href='type.NotFoundFn.html'
-                                  title='reroute::NotFoundFn'>NotFoundFn</a></td>
-                           <td class='docblock short'>
-                                
-                           </td>
-                       </tr></table></section>
+               </span><a id='src-13' class='srclink' href='../src/reroute/src/lib.rs.html#14' title='goto source code'>[src]</a></span></h1>
+<pre class='rust typedef'>type NotFoundFn = fn(<a class='struct' href='https://hyperium.github.io/hyper/hyper/server/request/struct.Request.html' title='hyper::server::request::Request'>Request</a>, <a class='struct' href='https://hyperium.github.io/hyper/hyper/server/response/struct.Response.html' title='hyper::server::response::Response'>Response</a>);</pre></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>

@@ -247,6 +247,15 @@
 <span id="203">203</span>
 <span id="204">204</span>
 <span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
 </pre><pre class='rust '>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>hyper</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>regex</span>;
@@ -261,7 +270,7 @@
 <span class='kw'>use</span> <span class='ident'>error</span>::<span class='ident'>RouterError</span>;
 
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>Captures</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;&gt;</span>;
-<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>RouterFn</span> <span class='op'>=</span> <span class='kw'>fn</span>(<span class='ident'>Request</span>, <span class='ident'>Response</span>, <span class='ident'>Captures</span>);
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>NotFoundFn</span> <span class='op'>=</span> <span class='kw'>fn</span>(<span class='ident'>Request</span>, <span class='ident'>Response</span>);
 
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>Eq</span>, <span class='ident'>Hash</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>RouteInfo</span> {
@@ -276,16 +285,20 @@
 <span class='doccomment'>/// Under the hood a Router uses a RegexSet to match URI&#39;s that come in to the</span>
 <span class='doccomment'>/// instance of the hyper server. Because of this, it has the potential to match</span>
 <span class='doccomment'>/// multiple patterns that you provide. It will call the first handler that it</span>
-<span class='doccomment'>/// matches against so order matters.</span>
+<span class='doccomment'>/// matches against so the order in which you add routes matters.</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Router</span> {
     <span class='doccomment'>/// A custom 404 handler that you can provide.</span>
-    <span class='kw'>pub</span> <span class='ident'>not_found</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>RouterFn</span><span class='op'>&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>not_found</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>NotFoundFn</span><span class='op'>&gt;</span>,
 
     <span class='ident'>routes</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>RegexSet</span><span class='op'>&gt;</span>,
     <span class='ident'>route_list</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span>,
     <span class='ident'>compiled_list</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Regex</span><span class='op'>&gt;</span>,
-    <span class='ident'>route_map</span>: <span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>RouteInfo</span>, <span class='ident'>RouterFn</span><span class='op'>&gt;</span>
+    <span class='ident'>route_map</span>: <span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>RouteInfo</span>, <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Fn</span>(<span class='ident'>Request</span>, <span class='ident'>Response</span>, <span class='ident'>Captures</span>)<span class='op'>&gt;&gt;</span>
 }
+
+<span class='comment'>// These are needed to satisfy the Handler trait while using Fn to accept closures.</span>
+<span class='kw'>unsafe</span> <span class='kw'>impl</span> <span class='ident'>Send</span> <span class='kw'>for</span> <span class='ident'>Router</span> { }
+<span class='kw'>unsafe</span> <span class='kw'>impl</span> <span class='ident'>Sync</span> <span class='kw'>for</span> <span class='ident'>Router</span> { }
 
 <span class='kw'>impl</span> <span class='ident'>Handler</span> <span class='kw'>for</span> <span class='ident'>Router</span> {
     <span class='comment'>// The handle method for the router simply tries to match the URI against</span>
@@ -311,9 +324,7 @@
                     }
                 }
             },
-            <span class='comment'>// There is no point in passing captures to a route handler that</span>
-            <span class='comment'>// wasn&#39;t found.</span>
-            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>not_found</span>.<span class='ident'>unwrap</span>()(<span class='ident'>req</span>, <span class='ident'>res</span>, <span class='prelude-val'>None</span>)
+            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>not_found</span>.<span class='ident'>unwrap</span>()(<span class='ident'>req</span>, <span class='ident'>res</span>)
         }
     }
 }
@@ -334,7 +345,8 @@
     <span class='doccomment'>/// Add a route to the router and give it a function to call when the route</span>
     <span class='doccomment'>/// is matched against. You can call this explicitly or use the convenience</span>
     <span class='doccomment'>/// methods defined below.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_route</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>verb</span>: <span class='ident'>Method</span>, <span class='ident'>route</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>handler</span>: <span class='ident'>RouterFn</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_route</span><span class='op'>&lt;</span><span class='ident'>H</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>verb</span>: <span class='ident'>Method</span>, <span class='ident'>route</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>handler</span>: <span class='ident'>H</span>)
+        <span class='kw'>where</span> <span class='ident'>H</span>: <span class='ident'>Fn</span>(<span class='ident'>Request</span>, <span class='ident'>Response</span>, <span class='ident'>Captures</span>) <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span> {
         <span class='kw'>let</span> <span class='ident'>route_info</span> <span class='op'>=</span> <span class='ident'>RouteInfo</span>{<span class='ident'>route</span>: <span class='ident'>route</span>.<span class='ident'>to_owned</span>(), <span class='ident'>verb</span>: <span class='ident'>verb</span>};
         <span class='kw'>let</span> <span class='ident'>pattern</span> <span class='op'>=</span> <span class='ident'>Regex</span>::<span class='ident'>new</span>(<span class='ident'>route</span>);
         <span class='kw'>match</span> <span class='ident'>pattern</span> {
@@ -342,36 +354,42 @@
             <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> { <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;Not adding this route due to error: {}&quot;</span>, <span class='ident'>e</span>); }
         }
         <span class='self'>self</span>.<span class='ident'>route_list</span>.<span class='ident'>push</span>(<span class='ident'>route</span>.<span class='ident'>to_owned</span>());
-        <span class='self'>self</span>.<span class='ident'>route_map</span>.<span class='ident'>insert</span>(<span class='ident'>route_info</span>, <span class='ident'>handler</span>);
+        <span class='self'>self</span>.<span class='ident'>route_map</span>.<span class='ident'>insert</span>(<span class='ident'>route_info</span>, <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>handler</span>));
     }
 
+
     <span class='doccomment'>/// A convenience method for OPTIONS requests.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>options</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>route</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>handler</span>: <span class='ident'>RouterFn</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>options</span><span class='op'>&lt;</span><span class='ident'>H</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>route</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>handler</span>: <span class='ident'>H</span>)
+        <span class='kw'>where</span> <span class='ident'>H</span>: <span class='ident'>Fn</span>(<span class='ident'>Request</span>, <span class='ident'>Response</span>, <span class='ident'>Captures</span>) <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span> {
         <span class='self'>self</span>.<span class='ident'>add_route</span>(<span class='ident'>Method</span>::<span class='ident'>Options</span>, <span class='ident'>route</span>, <span class='ident'>handler</span>);
     }
 
     <span class='doccomment'>/// A convenience method for GET requests.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>route</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>handler</span>: <span class='ident'>RouterFn</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get</span><span class='op'>&lt;</span><span class='ident'>H</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>route</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>handler</span>: <span class='ident'>H</span>)
+        <span class='kw'>where</span> <span class='ident'>H</span>: <span class='ident'>Fn</span>(<span class='ident'>Request</span>, <span class='ident'>Response</span>, <span class='ident'>Captures</span>) <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span> {
         <span class='self'>self</span>.<span class='ident'>add_route</span>(<span class='ident'>Method</span>::<span class='ident'>Get</span>, <span class='ident'>route</span>, <span class='ident'>handler</span>);
     }
 
     <span class='doccomment'>/// A convenience method for POST requests.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>post</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>route</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>handler</span>: <span class='ident'>RouterFn</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>post</span><span class='op'>&lt;</span><span class='ident'>H</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>route</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>handler</span>: <span class='ident'>H</span>)
+        <span class='kw'>where</span> <span class='ident'>H</span>: <span class='ident'>Fn</span>(<span class='ident'>Request</span>, <span class='ident'>Response</span>, <span class='ident'>Captures</span>) <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span> {
         <span class='self'>self</span>.<span class='ident'>add_route</span>(<span class='ident'>Method</span>::<span class='ident'>Post</span>, <span class='ident'>route</span>, <span class='ident'>handler</span>);
     }
 
     <span class='doccomment'>/// A convenience method for PUT requests.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>put</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>route</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>handler</span>: <span class='ident'>RouterFn</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>put</span><span class='op'>&lt;</span><span class='ident'>H</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>route</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>handler</span>: <span class='ident'>H</span>)
+        <span class='kw'>where</span> <span class='ident'>H</span>: <span class='ident'>Fn</span>(<span class='ident'>Request</span>, <span class='ident'>Response</span>, <span class='ident'>Captures</span>) <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span> {
         <span class='self'>self</span>.<span class='ident'>add_route</span>(<span class='ident'>Method</span>::<span class='ident'>Put</span>, <span class='ident'>route</span>, <span class='ident'>handler</span>);
     }
 
     <span class='doccomment'>/// A convenience method for DELETE requests.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>delete</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>route</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>handler</span>: <span class='ident'>RouterFn</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>delete</span><span class='op'>&lt;</span><span class='ident'>H</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>route</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>handler</span>: <span class='ident'>H</span>)
+        <span class='kw'>where</span> <span class='ident'>H</span>: <span class='ident'>Fn</span>(<span class='ident'>Request</span>, <span class='ident'>Response</span>, <span class='ident'>Captures</span>) <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span> {
         <span class='self'>self</span>.<span class='ident'>add_route</span>(<span class='ident'>Method</span>::<span class='ident'>Delete</span>, <span class='ident'>route</span>, <span class='ident'>handler</span>);
     }
 
-    <span class='doccomment'>/// This function ensures that a valid RegexSet could be made from the route</span>
-    <span class='doccomment'>/// vector that was built while using the functions that add routes. It also</span>
+    <span class='doccomment'>/// This function ensures that a valid `RegexSet` could be made from the route</span>
+    <span class='doccomment'>/// vector that was built while using the functions that add routes. It</span>
     <span class='doccomment'>/// requires that there exist at least one route so that the RegexSet can be</span>
     <span class='doccomment'>/// successfully constructed.</span>
     <span class='doccomment'>///</span>
@@ -401,13 +419,13 @@
     }
 
     <span class='doccomment'>/// Add a function to handle routes that get no matches.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_not_found</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>not_found</span>: <span class='ident'>RouterFn</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_not_found</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>not_found</span>: <span class='ident'>NotFoundFn</span>) {
         <span class='self'>self</span>.<span class='ident'>not_found</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>not_found</span>)
     }
 }
 
 <span class='comment'>// The default 404 handler.</span>
-<span class='kw'>fn</span> <span class='ident'>default_not_found</span>(<span class='ident'>req</span>: <span class='ident'>Request</span>, <span class='kw-2'>mut</span> <span class='ident'>res</span>: <span class='ident'>Response</span>, _: <span class='ident'>Captures</span>) {
+<span class='kw'>fn</span> <span class='ident'>default_not_found</span>(<span class='ident'>req</span>: <span class='ident'>Request</span>, <span class='kw-2'>mut</span> <span class='ident'>res</span>: <span class='ident'>Response</span>) {
     <span class='kw'>let</span> <span class='ident'>message</span> <span class='op'>=</span> <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;No route handler found for {}&quot;</span>, <span class='ident'>req</span>.<span class='ident'>uri</span>);
     <span class='op'>*</span><span class='ident'>res</span>.<span class='ident'>status_mut</span>() <span class='op'>=</span> <span class='ident'>StatusCode</span>::<span class='ident'>NotFound</span>;
     <span class='ident'>res</span>.<span class='ident'>send</span>(<span class='ident'>message</span>.<span class='ident'>as_bytes</span>()).<span class='ident'>unwrap</span>();
