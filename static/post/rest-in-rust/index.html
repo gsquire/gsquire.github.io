@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.16" />
+
+
+<title>REST in Rust - Garrett&#39;s Blog</title>
+<meta property="og:title" content="REST in Rust - Garrett&#39;s Blog">
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="https://gsquire.github.io/css/main.css" media="all">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Merriweather:400|Lato:400,400italic,700">
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="https://gsquire.github.io/" class="nav-logo"><img src="https://gsquire.github.io/images/black.png" width="30" height="30"></a>
+
+  <ul class="nav-links">
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">3 min read</span>
+    
+
+    <h1 class="article-title">REST in Rust</h1>
+
+    
+    <span class="article-date">June 6, 2016</span>
+    
+
+    <div class="article-content">
+      
+
+<h1 id="writing-a-simple-rest-app-in-rust">Writing a simple REST app in Rust</h1>
+
+<p>If you have ever worked with HTTP in Rust, you have probably referred to the
+<a href="hyper.rs">hyper</a> crate. Hyper provides a safe abstraction over HTTP and offers both
+a client and server type. It is also the foundation for frameworks such as <a href="https://github.com/iron/iron">Iron</a>
+and <a href="https://github.com/nickel-org/nickel.rs">Nickel</a>.</p>
+
+<p>One of the coolest things about hyper is that its server can be started with anything that
+implements the <a href="http://hyper.rs/hyper/v0.9.8/hyper/server/trait.Handler.html"><code>Handler</code></a> trait.
+There is one required method called <code>handle</code> and it denotes how the type which implements it
+should respond to an incoming connection.</p>
+
+<p><code>handle</code> has the following function signature:</p>
+
+<pre><code>fn handle&lt;'a, 'k&gt;(&amp;'a self, Request&lt;'a, 'k&gt;, Response&lt;'a, Fresh&gt;)
+</code></pre>
+
+<p>As you can see it gives us access to a <code>Request</code> and <code>Response</code> type which are aptly named. If you take a look
+at the documentation for these, you will find that they provide the basis to check
+for HTTP headers or set the body of an HTTP response.</p>
+
+<h2 id="regexset"><code>RegexSet</code></h2>
+
+<p>The regex crate recently added a type called a <a href="https://doc.rust-lang.org/regex/regex/struct.RegexSet.html"><code>RegexSet</code></a>.
+This is a powerful construct in that it can match multiple patterns that you provide in a single
+scan. Using this idea, I thought it would be fun to write a router with a <code>RegexSet</code> matching
+requests under the hood.</p>
+
+<p>The result of this is <a href="https://github.com/gsquire/reroute">reroute</a>. This crate provides a <code>Router</code>
+type that can match patterns you provide and call corresponding functions accordingly. The functions have access
+to the <code>Request</code> and <code>Response</code> along with a type that captures matches in the URI.</p>
+
+<h2 id="a-simple-example">A simple example</h2>
+
+<pre><code class="language-rust">extern crate hyper;
+extern crate reroute;
+
+use hyper::Server;
+use hyper::server::{Request, Response};
+use reroute::{Captures, Router};
+
+fn digit_handler(_: Request, res: Response, c: Captures) {
+    println!(&quot;captures: {:?}&quot;, c);
+    res.send(b&quot;It works for digits!&quot;).unwrap();
+}
+
+fn main() {
+    let mut router = Router::new();
+
+    // Use raw strings so you don't need to escape patterns.
+    router.get(r&quot;/(\d+)&quot;, digit_handler);
+
+    router.finalize().unwrap();
+
+    // You can pass the router to hyper's Server's handle function as it
+    // implements the Handle trait.
+    Server::http(&quot;127.0.0.1:3000&quot;).unwrap().handle(router).unwrap();
+}
+</code></pre>
+
+<p>Since <code>Router</code> implements the <code>Handler</code> trait, hyper&rsquo;s <code>Server</code> can use it to respond
+to connections. With this in mind, you can write a REST app in a few lines and extend this
+functionality to suit your own needs. The <code>Captures</code> type gives you matches in your URI that the regex
+engine finds. So in the example above, if I do a GET against the route &ldquo;/123&rdquo;, <code>c</code> will be
+<code>Some([&quot;/123&quot;, &quot;123&quot;])</code>. This is a <code>Vector</code> of the matches returned from the <code>RegexSet</code>. You
+can use any pattern with grouping that you like and the router will collect them for you. Of course
+you don&rsquo;t need to provide groups and can just add routes like &ldquo;/v1/some/endpoint&rdquo; as well.</p>
+
+<p>Reroute surely isn&rsquo;t as complete as Iron but its only goal is to route requests in an app.</p>
+
+<h2 id="questions-or-thoughts">Questions or thoughts?</h2>
+
+<p>Feel free to contact me through the email on my <a href="https://github.com/gsquire">GitHub</a> profile.</p>
+
+    </div>
+  </article>
+
+  
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="https://gsquire.github.io/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="https://gsquire.github.io/images/hugo-logo.png" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+
+    
+  </body>
+</html>
+
