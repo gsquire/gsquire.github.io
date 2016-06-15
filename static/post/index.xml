@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Garrett&#39;s Blog</title>
-    <link>https://gsquire.github.io/post/</link>
+    <link>https://gsquire.github.io/static/post/</link>
     <description>Recent content in Posts on Garrett&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Tue, 14 Jun 2016 14:56:18 -0700</lastBuildDate>
-    <atom:link href="https://gsquire.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://gsquire.github.io/static/post/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>REST in Rust</title>
-      <link>https://gsquire.github.io/post/rest-in-rust/</link>
+      <link>https://gsquire.github.io/static/post/rest-in-rust/</link>
       <pubDate>Tue, 14 Jun 2016 14:56:18 -0700</pubDate>
       
-      <guid>https://gsquire.github.io/post/rest-in-rust/</guid>
+      <guid>https://gsquire.github.io/static/post/rest-in-rust/</guid>
       <description>
 
 &lt;h1 id=&#34;writing-a-simple-rest-app-in-rust&#34;&gt;Writing a simple REST app in Rust&lt;/h1&gt;
