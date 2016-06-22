@@ -273,7 +273,7 @@
 <span class='kw'>use</span> <span class='ident'>hyper</span>::<span class='ident'>status</span>::<span class='ident'>StatusCode</span>;
 <span class='kw'>use</span> <span class='ident'>regex</span>::{<span class='ident'>Regex</span>, <span class='ident'>RegexSet</span>};
 
-<span class='kw'>use</span> <span class='ident'>error</span>::<span class='ident'>RouterError</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>error</span>::<span class='ident'>RouterError</span>;
 
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>Captures</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;&gt;</span>;
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>NotFoundFn</span> <span class='op'>=</span> <span class='kw'>fn</span>(<span class='ident'>Request</span>, <span class='ident'>Response</span>);
