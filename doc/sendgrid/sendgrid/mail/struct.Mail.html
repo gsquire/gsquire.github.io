@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-68' class='srclink' href='../../src/sendgrid/src/mail/mod.rs.html#10-26' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-56' class='srclink' href='../../src/sendgrid/src/mail.rs.html#10-26' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Mail {
     pub to: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;,
     pub to_names: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;,
@@ -82,7 +82,8 @@ all of the fields in the V2 API.</p>
                              <td id='structfield.attachments'><code>attachments</code></td><td></td></tr><tr class='stab '>
                              <td id='structfield.content'><code>content</code></td><td></td></tr><tr class='stab '>
                              <td id='structfield.headers'><code>headers</code></td><td></td></tr><tr class='stab '>
-                             <td id='structfield.x_smtpapi'><code>x_smtpapi</code></td><td></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../sendgrid/mail/struct.Mail.html' title='sendgrid::mail::Mail'>Mail</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../sendgrid/mail/struct.Mail.html' title='sendgrid::mail::Mail'>Mail</a></code></h4>
+                             <td id='structfield.x_smtpapi'><code>x_smtpapi</code></td><td></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../sendgrid/mail/struct.Mail.html' title='sendgrid::mail::Mail'>Mail</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-92' class='srclink' href='../../src/sendgrid/src/mail.rs.html#28-158' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../sendgrid/mail/struct.Mail.html' title='sendgrid::mail::Mail'>Mail</a></code></h4>
 <div class='docblock'><p>Returns a new Mail struct to send with a client. All of the fields are
 initially empty.</p>
 </div><h4 id='method.add_cc' class='method'><code>fn <a href='#method.add_cc' class='fnname'>add_cc</a>&lt;T: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;(&amp;mut self, cc_addr: T)</code></h4>
@@ -128,8 +129,10 @@ path on the file system.</p>
 <div class='docblock'><p>Add an X-SMTPAPI string to the message. This can be done by using the
 &#39;rustc_serialize&#39; crate and JSON encoding a map or custom struct. Or
 a regular String type can be escaped and used.</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../sendgrid/mail/struct.Mail.html' title='sendgrid::mail::Mail'>Mail</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
-</div></section>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../sendgrid/mail/struct.Mail.html' title='sendgrid::mail::Mail'>Mail</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-72' class='srclink' href='../../src/sendgrid/src/mail.rs.html#7' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+<div class='docblock'><p>Formats the value using the given formatter.</p>
+</div></div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -152,6 +155,8 @@ a regular String type can be escaped and used.</p>
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

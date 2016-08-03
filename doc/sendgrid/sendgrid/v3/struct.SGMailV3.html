@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `SGClient` struct in crate `sendgrid`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, SGClient">
+    <meta name="description" content="API documentation for the Rust `SGMailV3` struct in crate `sendgrid`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, SGMailV3">
 
-    <title>sendgrid::sg_client::SGClient - Rust</title>
+    <title>sendgrid::v3::SGMailV3 - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
@@ -28,7 +28,7 @@
 
     <nav class="sidebar">
         
-        <p class='location'><a href='../index.html'>sendgrid</a>::<wbr><a href='index.html'>sg_client</a></p><script>window.sidebarCurrent = {name: 'SGClient', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+        <p class='location'><a href='../index.html'>sendgrid</a>::<wbr><a href='index.html'>v3</a></p><script>window.sidebarCurrent = {name: 'SGMailV3', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </nav>
 
     <nav class="sub">
@@ -43,22 +43,26 @@
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>sendgrid</a>::<wbr><a href='index.html'>sg_client</a>::<wbr><a class='struct' href=''>SGClient</a></span><span class='out-of-band'><span id='render-detail'>
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>sendgrid</a>::<wbr><a href='index.html'>v3</a>::<wbr><a class='struct' href=''>SGMailV3</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-17' class='srclink' href='../../src/sendgrid/src/sg_client.rs.html#16-18' title='goto source code'>[src]</a></span></h1>
-<pre class='rust struct'>pub struct SGClient {
+               </span><a id='src-185' class='srclink' href='../../src/sendgrid/Users/gsquire/programming/rust/sendgrid-rs/target/debug/build/sendgrid-3269793caea6ded2/out/v3.rs.html#21-26' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct SGMailV3 {
     // some fields omitted
-}</pre><div class='docblock'><p>This is the struct that allows you to authenticate to the SendGrid API.
-It&#39;s only field is the API key which allows you to send messages.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../sendgrid/sg_client/struct.SGClient.html' title='sendgrid::sg_client::SGClient'>SGClient</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-35' class='srclink' href='../../src/sendgrid/src/sg_client.rs.html#73-108' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(key: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>) -&gt; <a class='struct' href='../../sendgrid/sg_client/struct.SGClient.html' title='sendgrid::sg_client::SGClient'>SGClient</a></code></h4>
-<div class='docblock'><p>Makes a new SendGrid cient with the specified API key.</p>
-</div><h4 id='method.send' class='method'><code>fn <a href='#method.send' class='fnname'>send</a>(self, mail_info: <a class='struct' href='../../sendgrid/mail/struct.Mail.html' title='sendgrid::mail::Mail'>Mail</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, <a class='enum' href='https://hyperium.github.io/hyper/hyper/error/enum.Error.html' title='hyper::error::Error'>Error</a>&gt;</code></h4>
-<div class='docblock'><p>Sends a messages through the SendGrid API. It takes a Mail struct as an
-argument. It returns the string response from the API as JSON.
-It sets the Content-Type to be application/x-www-form-urlencoded.</p>
+}</pre><div class='docblock'><p>The main structure for a V3 API mail send call. This is composed of many other smaller
+structures used to add lots of customization to your message.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../sendgrid/v3/struct.SGMailV3.html' title='sendgrid::v3::SGMailV3'>SGMailV3</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-303' class='srclink' href='../../src/sendgrid/Users/gsquire/programming/rust/sendgrid-rs/target/debug/build/sendgrid-3269793caea6ded2/out/v3.rs.html#253-276' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../sendgrid/v3/struct.SGMailV3.html' title='sendgrid::v3::SGMailV3'>SGMailV3</a></code></h4>
+<div class='docblock'><p>Construct a new V3 message.</p>
+</div><h4 id='method.set_from' class='method'><code>fn <a href='#method.set_from' class='fnname'>set_from</a>(&amp;mut self, from: <a class='struct' href='../../sendgrid/v3/struct.Email.html' title='sendgrid::v3::Email'>Email</a>)</code></h4>
+<div class='docblock'><p>Set the from address.</p>
+</div><h4 id='method.set_subject' class='method'><code>fn <a href='#method.set_subject' class='fnname'>set_subject</a>(&amp;mut self, subject: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>)</code></h4>
+<div class='docblock'><p>Set the subject.</p>
+</div><h4 id='method.add_content' class='method'><code>fn <a href='#method.add_content' class='fnname'>add_content</a>(&amp;mut self, content: <a class='struct' href='../../sendgrid/v3/struct.Content.html' title='sendgrid::v3::Content'>Content</a>)</code></h4>
+<div class='docblock'><p>Add content to the message.</p>
+</div><h4 id='method.add_personalization' class='method'><code>fn <a href='#method.add_personalization' class='fnname'>add_personalization</a>(&amp;mut self, p: <a class='struct' href='../../sendgrid/v3/struct.Personalization.html' title='sendgrid::v3::Personalization'>Personalization</a>)</code></h4>
+<div class='docblock'><p>Add a personalization to the message.</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
 

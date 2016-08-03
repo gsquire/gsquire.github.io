@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `sg_client` mod in crate `sendgrid`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, sg_client">
+    <meta name="description" content="API documentation for the Rust `V3Sender` struct in crate `sendgrid`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, V3Sender">
 
-    <title>sendgrid::sg_client - Rust</title>
+    <title>sendgrid::v3::V3Sender - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
@@ -28,7 +28,7 @@
 
     <nav class="sidebar">
         
-        <p class='location'><a href='../index.html'>sendgrid</a></p><script>window.sidebarCurrent = {name: 'sg_client', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+        <p class='location'><a href='../index.html'>sendgrid</a>::<wbr><a href='index.html'>v3</a></p><script>window.sidebarCurrent = {name: 'V3Sender', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </nav>
 
     <nav class="sub">
@@ -42,22 +42,21 @@
         </form>
     </nav>
 
-    <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>sendgrid</a>::<wbr><a class='mod' href=''>sg_client</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>sendgrid</a>::<wbr><a href='index.html'>v3</a>::<wbr><a class='struct' href=''>V3Sender</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-7' class='srclink' href='../../src/sendgrid/src/sg_client.rs.html#1-129' title='goto source code'>[src]</a></span></h1>
-<h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class='struct' href='struct.SGClient.html'
-                                  title='sendgrid::sg_client::SGClient'>SGClient</a></td>
-                           <td class='docblock short'>
-                                <p>This is the struct that allows you to authenticate to the SendGrid API.
-It&#39;s only field is the API key which allows you to send messages.</p>
-                           </td>
-                       </tr></table></section>
+               </span><a id='src-183' class='srclink' href='../../src/sendgrid/Users/gsquire/programming/rust/sendgrid-rs/target/debug/build/sendgrid-3269793caea6ded2/out/v3.rs.html#15-17' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct V3Sender {
+    // some fields omitted
+}</pre><div class='docblock'><p>Used to send a V3 message body.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../sendgrid/v3/struct.V3Sender.html' title='sendgrid::v3::V3Sender'>V3Sender</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-291' class='srclink' href='../../src/sendgrid/Users/gsquire/programming/rust/sendgrid-rs/target/debug/build/sendgrid-3269793caea6ded2/out/v3.rs.html#235-252' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(api_key: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>) -&gt; <a class='struct' href='../../sendgrid/v3/struct.V3Sender.html' title='sendgrid::v3::V3Sender'>V3Sender</a></code></h4>
+<div class='docblock'><p>Construct a new V3 message sender.</p>
+</div><h4 id='method.send' class='method'><code>fn <a href='#method.send' class='fnname'>send</a>(&amp;self, mail: &amp;<a class='struct' href='../../sendgrid/v3/struct.SGMailV3.html' title='sendgrid::v3::SGMailV3'>SGMailV3</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='enum' href='https://hyperium.github.io/hyper/hyper/status/enum.StatusCode.html' title='hyper::status::StatusCode'>StatusCode</a>, <a class='enum' href='https://hyperium.github.io/hyper/hyper/error/enum.Error.html' title='hyper::error::Error'>Error</a>&gt;</code></h4>
+<div class='docblock'><p>Send a V3 message and return the status code or an error from the request.</p>
+</div></div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>

@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `sg_client` mod in crate `sendgrid`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, sg_client">
+    <meta name="description" content="API documentation for the Rust `Personalization` struct in crate `sendgrid`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Personalization">
 
-    <title>sendgrid::sg_client - Rust</title>
+    <title>sendgrid::v3::Personalization - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
@@ -28,7 +28,7 @@
 
     <nav class="sidebar">
         
-        <p class='location'><a href='../index.html'>sendgrid</a></p><script>window.sidebarCurrent = {name: 'sg_client', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+        <p class='location'><a href='../index.html'>sendgrid</a>::<wbr><a href='index.html'>v3</a></p><script>window.sidebarCurrent = {name: 'Personalization', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </nav>
 
     <nav class="sub">
@@ -42,22 +42,24 @@
         </form>
     </nav>
 
-    <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>sendgrid</a>::<wbr><a class='mod' href=''>sg_client</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>sendgrid</a>::<wbr><a href='index.html'>v3</a>::<wbr><a class='struct' href=''>Personalization</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-7' class='srclink' href='../../src/sendgrid/src/sg_client.rs.html#1-129' title='goto source code'>[src]</a></span></h1>
-<h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class='struct' href='struct.SGClient.html'
-                                  title='sendgrid::sg_client::SGClient'>SGClient</a></td>
-                           <td class='docblock short'>
-                                <p>This is the struct that allows you to authenticate to the SendGrid API.
-It&#39;s only field is the API key which allows you to send messages.</p>
-                           </td>
-                       </tr></table></section>
+               </span><a id='src-252' class='srclink' href='../../src/sendgrid/Users/gsquire/programming/rust/sendgrid-rs/target/debug/build/sendgrid-3269793caea6ded2/out/v3.rs.html#162-171' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct Personalization {
+    // some fields omitted
+}</pre><div class='docblock'><p>A personalization block for a V3 message. It has to at least contain one email as a to
+address. All other fields are optional.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../sendgrid/v3/struct.Personalization.html' title='sendgrid::v3::Personalization'>Personalization</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-335' class='srclink' href='../../src/sendgrid/Users/gsquire/programming/rust/sendgrid-rs/target/debug/build/sendgrid-3269793caea6ded2/out/v3.rs.html#303-328' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../sendgrid/v3/struct.Personalization.html' title='sendgrid::v3::Personalization'>Personalization</a></code></h4>
+<div class='docblock'><p>Construct a new personalization block for this message.</p>
+</div><h4 id='method.add_to' class='method'><code>fn <a href='#method.add_to' class='fnname'>add_to</a>(&amp;mut self, to: <a class='struct' href='../../sendgrid/v3/struct.Email.html' title='sendgrid::v3::Email'>Email</a>)</code></h4>
+<div class='docblock'><p>Add a to field.</p>
+</div><h4 id='method.add_cc' class='method'><code>fn <a href='#method.add_cc' class='fnname'>add_cc</a>(&amp;mut self, cc: <a class='struct' href='../../sendgrid/v3/struct.Email.html' title='sendgrid::v3::Email'>Email</a>)</code></h4>
+<div class='docblock'><p>Add a CC field.</p>
+</div></div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
