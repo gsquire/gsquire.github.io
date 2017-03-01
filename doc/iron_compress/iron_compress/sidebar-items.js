@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["DeflateWriter","A type that knows how to encode a stream of bytes with the deflate algorithm."],["GzipWriter","A type that knows how to encode a stream of bytes with the GZIP algorithm."]]});

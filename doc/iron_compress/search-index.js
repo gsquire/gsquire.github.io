@@ -1,3 +1,0 @@
-var searchIndex = {};
-searchIndex["iron_compress"] = {"doc":"","items":[[3,"DeflateWriter","iron_compress","A type that knows how to encode a stream of bytes with the deflate algorithm.",null,null],[12,"0","","",0,null],[3,"GzipWriter","","A type that knows how to encode a stream of bytes with the GZIP algorithm.",null,null],[12,"0","","",1,null],[11,"modify","","Encode the bytes with the deflate algorithm.",0,{"inputs":[{"name":"deflatewriter"},{"name":"response"}],"output":null}],[11,"modify","","Encode the bytes with the GZIP algorithm.",1,{"inputs":[{"name":"gzipwriter"},{"name":"response"}],"output":null}]],"paths":[[3,"DeflateWriter"],[3,"GzipWriter"]]};
-initSearch(searchIndex);
