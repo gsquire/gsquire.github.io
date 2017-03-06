@@ -1,4 +1,2 @@
 # GitHub Pages
-The home of my pages content. Mostly posts and documentation.
-
-https://gsquire.github.io
+The home of my pages content. For now it is just a simple blog.
