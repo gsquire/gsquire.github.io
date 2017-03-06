@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.19" />
+
+
+<title>Cleaner Go - Garrett&#39;s Blog</title>
+<meta property="og:title" content="Cleaner Go - Garrett&#39;s Blog">
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="https://gsquire.github.io/static/css/main.css" media="all">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Merriweather:400|Lato:400,400italic,700">
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="https://gsquire.github.io/static/" class="nav-logo">
+    <img src="https://gsquire.github.io/static/images/black.png" 
+         width="30" 
+         height="30" 
+         alt="">
+  </a>
+
+  <ul class="nav-links">
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">4 min read</span>
+    
+
+    <h1 class="article-title">Cleaner Go</h1>
+
+    
+    <span class="article-date">March 6, 2017</span>
+    
+
+    <div class="article-content">
+      
+
+<p>Large code bases can become increasingly complex to manage as you add more code while
+also refactoring what is there already. Even with diligent code reviews, it is easy to gloss over
+common programming mistakes. Sometimes code can be written in a simpler way. Or perhaps a recent
+refactor left a few functions in that are no longer used.</p>
+
+<p>Luckily the <code>go</code> tool includes a sub-command that will examine Go source and report suspicious lines
+based on heuristics that the compiler will not catch. You can run <code>go vet</code> over you entire source
+tree as such:</p>
+
+<pre><code class="language-sh">go vet ./...
+</code></pre>
+
+<p>The vet sub-command is limited by what it catches but is a good first pass that can catch errors
+that a developer might not.</p>
+
+<h2 id="static-analysis">Static Analysis</h2>
+
+<p>Another set of tools for analyzing your Go code is under the <a href="https://github.com/dominikh/go-tools">go-tools</a>
+repository. These commands are a great addition to <code>go vet</code> in the sense that they provide a much more
+extensive review of your source. Each tool can be installed with <code>go get</code> if you wish to pick out
+certain ones you find useful.</p>
+
+<p>Below are some examples of the tools I find most valuable. Even though these
+examples are contrived, they will compile and pass <code>go vet</code>.</p>
+
+<h4 id="simplifying-code">Simplifying Code</h4>
+
+<p><code>gosimple</code> analyzes your code to see if it can be written in a simpler manner. For example:</p>
+
+<pre><code class="language-go">package main
+
+import &quot;fmt&quot;
+
+func bad(b bool) {
+	if b == true {
+		fmt.Println(&quot;true&quot;)
+	} else {
+		fmt.Println(&quot;false&quot;)
+	}
+}
+
+func main() {
+	bad(true)
+}
+</code></pre>
+
+<p>When running <code>gosimple main.go</code> you will see this output:</p>
+
+<p><code>main.go:6:5: should omit comparison to bool constant, can be simplified to b (S1002)</code></p>
+
+<h4 id="static-checks">Static Checks</h4>
+
+<p><code>staticcheck</code> is a great lint because it can find subtle issues in your Go code. For example:</p>
+
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;strings&quot;
+)
+
+func main() {
+	s := strings.Replace(&quot;bad-bad-bad&quot;, &quot;-&quot;, &quot;&amp;&quot;, 0)
+	fmt.Println(s)
+}
+</code></pre>
+
+<p>When running <code>staticcheck main.go</code> you will see this output:</p>
+
+<p><code>main.go:9:48: calling strings.Replace with n == 0 will return no results, did you mean -1? (SA1018)</code></p>
+
+<p>There are many items that <code>staticcheck</code> can catch and they are listed in the
+<a href="https://github.com/dominikh/go-tools/tree/master/cmd/staticcheck">README</a>. During a recent
+refactor of some of my code I had silently omitted an error check in a function. There
+were other checks throughout the function but if it had failed in the step without a check, the error variable
+would have had the wrong value. This would have been a nightmare to debug.</p>
+
+<h4 id="unused">Unused</h4>
+
+<p>When refactoring it is often easy to forget about certain bits of code. There may be functions or
+variables that are defined but not used anywhere. This is often referred to as dead code. For example:</p>
+
+<pre><code class="language-go">package main
+
+import &quot;fmt&quot;
+
+const a = 5
+
+func main() {
+	fmt.Println(&quot;hello&quot;)
+}
+</code></pre>
+
+<p>When running <code>unused main.go</code> you will see this output:</p>
+
+<pre><code class="language-sh">main.go:5:7: const a is unused (U1000)
+</code></pre>
+
+<h4 id="git-hooks">Git Hooks</h4>
+
+<p>I found that these tools were important in my workflow and decided to add them as a pre-commit hook
+in git. For those unfamiliar with git hooks, the documentation for them can be found <a href="https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks">here</a>.
+They essentially provide a way to customize your git workflow and enforce things such as commit
+message format or linting.</p>
+
+<p>In this case I want to run the tools above before a commit is made. Git&rsquo;s pre-commit hook is run
+before a new commit is made in the current branch as implied by the name. It adds a little extra time to the process but
+it is nice to have in the sense that it catches problems and allows you to adjust the working tree. This
+ensures that all commits are up to your standard.</p>
+
+<p>Here is the pre-commit hook I use for all my go projects:</p>
+
+<pre><code class="language-sh">#!/bin/bash
+
+check_exit() {
+    if [ $? -eq 1 ]; then
+        printf &quot;linting failed when running $1...\n&quot;
+        exit 1
+    fi
+}
+
+go vet $(glide nv)
+check_exit &quot;go vet&quot;
+
+gosimple $(glide nv)
+check_exit &quot;gosimple&quot;
+
+unused $(glide nv)
+check_exit &quot;unused&quot;
+
+staticcheck $(glide nv)
+check_exit &quot;staticcheck&quot;
+</code></pre>
+
+<p>The <code>glide nv</code> command lists all non-dependency code used in a project. It&rsquo;s akin to <code>./...</code> in the sense
+that is runs over all packages. Glide is the dependency manager I use for my projects and the site
+can be found <a href="https://glide.sh">here</a> for those that are interested.</p>
+
+<h4 id="summary">Summary</h4>
+
+<p>By adding static analysis tools to your Go code, you can help prevent common coding mistakes and
+make your development environment better in the process. Having this be automatic is also a
+catalyst for more iterative and effective coding.</p>
+
+    </div>
+  </article>
+
+  
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="https://gsquire.github.io/static/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="https://gsquire.github.io/static/images/hugo-logo.png" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+
+    
+  </body>
+</html>
+
