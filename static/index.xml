@@ -6,10 +6,19 @@
     <description>Recent content on Garrett&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 06 Mar 2017 14:30:42 -0800</lastBuildDate>
+    <lastBuildDate>Wed, 10 Jan 2018 19:05:55 -0800</lastBuildDate>
     
 	<atom:link href="https://gsquire.github.io/static/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Rust In 2018</title>
+      <link>https://gsquire.github.io/static/post/rust-in-2018/</link>
+      <pubDate>Wed, 10 Jan 2018 19:05:55 -0800</pubDate>
+      
+      <guid>https://gsquire.github.io/static/post/rust-in-2018/</guid>
+      <description>Rust in 2018 This short post is a reflection on Rust in 2017 and some ideas I would love to see in 2018 written in the spirit of this blog post. I will keep things brief and try not to repeat what others have already shared. There have been many wonderful ideas that makes me even more enthusiastic about Rust so I hope that I can add to the excitement with a few of my own.</description>
+    </item>
     
     <item>
       <title>Cleaner Go</title>
