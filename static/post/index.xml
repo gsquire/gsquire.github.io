@@ -2,12 +2,14 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Garrett&#39;s Blog</title>
-    <link>https://gsquire.github.io/static/post/index.xml</link>
+    <link>https://gsquire.github.io/static/post/</link>
     <description>Recent content in Posts on Garrett&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 06 Mar 2017 14:30:42 -0800</lastBuildDate>
-    <atom:link href="https://gsquire.github.io/static/post/index.xml" rel="self" type="application/rss+xml" />
+    
+	<atom:link href="https://gsquire.github.io/static/post/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Cleaner Go</title>
@@ -15,152 +17,8 @@
       <pubDate>Mon, 06 Mar 2017 14:30:42 -0800</pubDate>
       
       <guid>https://gsquire.github.io/static/post/cleaner-go/</guid>
-      <description>
-
-&lt;p&gt;Large code bases can become increasingly complex to manage as you add more code while
-also refactoring what is there already. Even with diligent code reviews, it is easy to gloss over
-common programming mistakes. Sometimes code can be written in a simpler way. Or perhaps a recent
-refactor left a few functions in that are no longer used.&lt;/p&gt;
-
-&lt;p&gt;Luckily the &lt;code&gt;go&lt;/code&gt; tool includes a sub-command that will examine Go source and report suspicious lines
-based on heuristics that the compiler will not catch. You can run &lt;code&gt;go vet&lt;/code&gt; over you entire source
-tree as such:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;go vet ./...
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The vet sub-command is limited by what it catches but is a good first pass that can catch errors
-that a developer might not.&lt;/p&gt;
-
-&lt;h2 id=&#34;static-analysis&#34;&gt;Static Analysis&lt;/h2&gt;
-
-&lt;p&gt;Another set of tools for analyzing your Go code is under the &lt;a href=&#34;https://github.com/dominikh/go-tools&#34;&gt;go-tools&lt;/a&gt;
-repository. These commands are a great addition to &lt;code&gt;go vet&lt;/code&gt; in the sense that they provide a much more
-extensive review of your source. Each tool can be installed with &lt;code&gt;go get&lt;/code&gt; if you wish to pick out
-certain ones you find useful.&lt;/p&gt;
-
-&lt;p&gt;Below are some examples of the tools I find most valuable. Even though these
-examples are contrived, they will compile and pass &lt;code&gt;go vet&lt;/code&gt;.&lt;/p&gt;
-
-&lt;h4 id=&#34;simplifying-code&#34;&gt;Simplifying Code&lt;/h4&gt;
-
-&lt;p&gt;&lt;code&gt;gosimple&lt;/code&gt; analyzes your code to see if it can be written in a simpler manner. For example:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
-
-import &amp;quot;fmt&amp;quot;
-
-func bad(b bool) {
-	if b == true {
-		fmt.Println(&amp;quot;true&amp;quot;)
-	} else {
-		fmt.Println(&amp;quot;false&amp;quot;)
-	}
-}
-
-func main() {
-	bad(true)
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;When running &lt;code&gt;gosimple main.go&lt;/code&gt; you will see this output:&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;main.go:6:5: should omit comparison to bool constant, can be simplified to b (S1002)&lt;/code&gt;&lt;/p&gt;
-
-&lt;h4 id=&#34;static-checks&#34;&gt;Static Checks&lt;/h4&gt;
-
-&lt;p&gt;&lt;code&gt;staticcheck&lt;/code&gt; is a great lint because it can find subtle issues in your Go code. For example:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
-
-import (
-	&amp;quot;fmt&amp;quot;
-	&amp;quot;strings&amp;quot;
-)
-
-func main() {
-	s := strings.Replace(&amp;quot;bad-bad-bad&amp;quot;, &amp;quot;-&amp;quot;, &amp;quot;&amp;amp;&amp;quot;, 0)
-	fmt.Println(s)
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;When running &lt;code&gt;staticcheck main.go&lt;/code&gt; you will see this output:&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;main.go:9:48: calling strings.Replace with n == 0 will return no results, did you mean -1? (SA1018)&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;There are many items that &lt;code&gt;staticcheck&lt;/code&gt; can catch and they are listed in the
-&lt;a href=&#34;https://github.com/dominikh/go-tools/tree/master/cmd/staticcheck&#34;&gt;README&lt;/a&gt;. During a recent
-refactor of some of my code I had silently omitted an error check in a function. There
-were other checks throughout the function but if it had failed in the step without a check, the error variable
-would have had the wrong value. This would have been a nightmare to debug.&lt;/p&gt;
-
-&lt;h4 id=&#34;unused&#34;&gt;Unused&lt;/h4&gt;
-
-&lt;p&gt;When refactoring it is often easy to forget about certain bits of code. There may be functions or
-variables that are defined but not used anywhere. This is often referred to as dead code. For example:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
-
-import &amp;quot;fmt&amp;quot;
-
-const a = 5
-
-func main() {
-	fmt.Println(&amp;quot;hello&amp;quot;)
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;When running &lt;code&gt;unused main.go&lt;/code&gt; you will see this output:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;main.go:5:7: const a is unused (U1000)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4 id=&#34;git-hooks&#34;&gt;Git Hooks&lt;/h4&gt;
-
-&lt;p&gt;I found that these tools were important in my workflow and decided to add them as a pre-commit hook
-in git. For those unfamiliar with git hooks, the documentation for them can be found &lt;a href=&#34;https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks&#34;&gt;here&lt;/a&gt;.
-They essentially provide a way to customize your git workflow and enforce things such as commit
-message format or linting.&lt;/p&gt;
-
-&lt;p&gt;In this case I want to run the tools above before a commit is made. Git&amp;rsquo;s pre-commit hook is run
-before a new commit is made in the current branch as implied by the name. It adds a little extra time to the process but
-it is nice to have in the sense that it catches problems and allows you to adjust the working tree. This
-ensures that all commits are up to your standard.&lt;/p&gt;
-
-&lt;p&gt;Here is the pre-commit hook I use for all my go projects:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;#!/bin/bash
-
-check_exit() {
-    if [ $? -eq 1 ]; then
-        printf &amp;quot;linting failed when running $1...\n&amp;quot;
-        exit 1
-    fi
-}
-
-go vet $(glide nv)
-check_exit &amp;quot;go vet&amp;quot;
-
-gosimple $(glide nv)
-check_exit &amp;quot;gosimple&amp;quot;
-
-unused $(glide nv)
-check_exit &amp;quot;unused&amp;quot;
-
-staticcheck $(glide nv)
-check_exit &amp;quot;staticcheck&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The &lt;code&gt;glide nv&lt;/code&gt; command lists all non-dependency code used in a project. It&amp;rsquo;s akin to &lt;code&gt;./...&lt;/code&gt; in the sense
-that is runs over all packages. Glide is the dependency manager I use for my projects and the site
-can be found &lt;a href=&#34;https://glide.sh&#34;&gt;here&lt;/a&gt; for those that are interested.&lt;/p&gt;
-
-&lt;h4 id=&#34;summary&#34;&gt;Summary&lt;/h4&gt;
-
-&lt;p&gt;By adding static analysis tools to your Go code, you can help prevent common coding mistakes and
-make your development environment better in the process. Having this be automatic is also a
-catalyst for more iterative and effective coding.&lt;/p&gt;
-</description>
+      <description>Large code bases can become increasingly complex to manage as you add more code while also refactoring what is there already. Even with diligent code reviews, it is easy to gloss over common programming mistakes. Sometimes code can be written in a simpler way. Or perhaps a recent refactor left a few functions in that are no longer used.
+Luckily the go tool includes a sub-command that will examine Go source and report suspicious lines based on heuristics that the compiler will not catch.</description>
     </item>
     
     <item>
@@ -169,82 +27,8 @@ catalyst for more iterative and effective coding.&lt;/p&gt;
       <pubDate>Tue, 14 Jun 2016 14:56:18 -0700</pubDate>
       
       <guid>https://gsquire.github.io/static/post/rest-in-rust/</guid>
-      <description>
-
-&lt;h1 id=&#34;writing-a-simple-rest-app-in-rust&#34;&gt;Writing a simple REST app in Rust&lt;/h1&gt;
-
-&lt;p&gt;If you have ever worked with HTTP in Rust, you have probably referred to the
-&lt;a href=&#34;hyper.rs&#34;&gt;hyper&lt;/a&gt; crate. Hyper provides a safe abstraction over HTTP and offers both
-a client and server type. It is also the foundation for frameworks such as &lt;a href=&#34;https://github.com/iron/iron&#34;&gt;Iron&lt;/a&gt;
-and &lt;a href=&#34;https://github.com/nickel-org/nickel.rs&#34;&gt;Nickel&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;One of the coolest things about hyper is that its server can be started with anything that
-implements the &lt;a href=&#34;http://hyper.rs/hyper/v0.9.8/hyper/server/trait.Handler.html&#34;&gt;&lt;code&gt;Handler&lt;/code&gt;&lt;/a&gt; trait.
-There is one required method called &lt;code&gt;handle&lt;/code&gt; and it denotes how the type which implements it
-should respond to an incoming connection.&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;handle&lt;/code&gt; has the following function signature:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;fn handle&amp;lt;&#39;a, &#39;k&amp;gt;(&amp;amp;&#39;a self, Request&amp;lt;&#39;a, &#39;k&amp;gt;, Response&amp;lt;&#39;a, Fresh&amp;gt;)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;As you can see it gives us access to a &lt;code&gt;Request&lt;/code&gt; and &lt;code&gt;Response&lt;/code&gt; type which are aptly named. If you take a look
-at the documentation for these, you will find that they provide the basis to check
-for HTTP headers or set the body of an HTTP response.&lt;/p&gt;
-
-&lt;h2 id=&#34;regexset&#34;&gt;&lt;code&gt;RegexSet&lt;/code&gt;&lt;/h2&gt;
-
-&lt;p&gt;The regex crate recently added a type called a &lt;a href=&#34;https://doc.rust-lang.org/regex/regex/struct.RegexSet.html&#34;&gt;&lt;code&gt;RegexSet&lt;/code&gt;&lt;/a&gt;.
-This is a powerful construct in that it can match multiple patterns that you provide in a single
-scan. Using this idea, I thought it would be fun to write a router with a &lt;code&gt;RegexSet&lt;/code&gt; matching
-requests under the hood.&lt;/p&gt;
-
-&lt;p&gt;The result of this is &lt;a href=&#34;https://github.com/gsquire/reroute&#34;&gt;reroute&lt;/a&gt;. This crate provides a &lt;code&gt;Router&lt;/code&gt;
-type that can match patterns you provide and call corresponding functions accordingly. The functions have access
-to the &lt;code&gt;Request&lt;/code&gt; and &lt;code&gt;Response&lt;/code&gt; along with a type that captures matches in the URI.&lt;/p&gt;
-
-&lt;h2 id=&#34;a-simple-example&#34;&gt;A simple example&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-rust&#34;&gt;extern crate hyper;
-extern crate reroute;
-
-use hyper::Server;
-use hyper::server::{Request, Response};
-use reroute::{Captures, Router};
-
-fn digit_handler(_: Request, res: Response, c: Captures) {
-    println!(&amp;quot;captures: {:?}&amp;quot;, c);
-    res.send(b&amp;quot;It works for digits!&amp;quot;).unwrap();
-}
-
-fn main() {
-    let mut router = Router::new();
-
-    // Use raw strings so you don&#39;t need to escape patterns.
-    router.get(r&amp;quot;/(\d+)&amp;quot;, digit_handler);
-
-    router.finalize().unwrap();
-
-    // You can pass the router to hyper&#39;s Server&#39;s handle function as it
-    // implements the Handle trait.
-    Server::http(&amp;quot;127.0.0.1:3000&amp;quot;).unwrap().handle(router).unwrap();
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Since &lt;code&gt;Router&lt;/code&gt; implements the &lt;code&gt;Handler&lt;/code&gt; trait, hyper&amp;rsquo;s &lt;code&gt;Server&lt;/code&gt; can use it to respond
-to connections. With this in mind, you can write a REST app in a few lines and extend this
-functionality to suit your own needs. The &lt;code&gt;Captures&lt;/code&gt; type gives you matches in your URI that the regex
-engine finds. So in the example above, if I do a GET against the route &amp;ldquo;/123&amp;rdquo;, &lt;code&gt;c&lt;/code&gt; will be
-&lt;code&gt;Some([&amp;quot;/123&amp;quot;, &amp;quot;123&amp;quot;])&lt;/code&gt;. This is a &lt;code&gt;Vector&lt;/code&gt; of the matches returned from the &lt;code&gt;RegexSet&lt;/code&gt;. You
-can use any pattern with grouping that you like and the router will collect them for you. Of course
-you don&amp;rsquo;t need to provide groups and can just add routes like &amp;ldquo;/v1/some/endpoint&amp;rdquo; as well.&lt;/p&gt;
-
-&lt;p&gt;Reroute surely isn&amp;rsquo;t as complete as Iron but its only goal is to route requests in an app.&lt;/p&gt;
-
-&lt;h2 id=&#34;questions-or-thoughts&#34;&gt;Questions or thoughts?&lt;/h2&gt;
-
-&lt;p&gt;Feel free to contact me through the email on my &lt;a href=&#34;https://github.com/gsquire&#34;&gt;GitHub&lt;/a&gt; profile.&lt;/p&gt;
-</description>
+      <description>Writing a simple REST app in Rust If you have ever worked with HTTP in Rust, you have probably referred to the hyper crate. Hyper provides a safe abstraction over HTTP and offers both a client and server type. It is also the foundation for frameworks such as Iron and Nickel.
+One of the coolest things about hyper is that its server can be started with anything that implements the Handler trait.</description>
     </item>
     
   </channel>

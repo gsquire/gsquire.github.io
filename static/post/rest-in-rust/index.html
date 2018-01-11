@@ -1,39 +1,182 @@
-
 <!DOCTYPE html>
 <html lang="en-us">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta content="" name="keywords">
-<meta content="REST in Rust - Garrett&#39;s Blog" property="og:title">
-<title>REST in Rust | Garrett&#39;s Blog</title>
-<link rel="stylesheet" href="https://gsquire.github.io/static//css/style.css">
-<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
 
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/default.min.css" integrity="sha256-Zd1icfZ72UBmsId/mUcagrmN7IN5Qkrvh75ICHIQVTk=" crossorigin="anonymous" />
+<head>
+<meta charset="utf-8" />
+<meta name="author" content="" />
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+<meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+<meta name="generator" content="Hugo 0.32.3" />
+
+<link rel="canonical" href="https://gsquire.github.io/static/post/rest-in-rust/">
+<base href="https://gsquire.github.io/static/" />
+<meta property="og:title" content="REST in Rust" />
+<meta property="og:description" content="Writing a simple REST app in Rust If you have ever worked with HTTP in Rust, you have probably referred to the hyper crate. Hyper provides a safe abstraction over HTTP and offers both a client and server type. It is also the foundation for frameworks such as Iron and Nickel.
+One of the coolest things about hyper is that its server can be started with anything that implements the Handler trait." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://gsquire.github.io/static/post/rest-in-rust/" />
 
 
-<section class="section">
-  <div class="container">
-    <nav class="nav">
-      <div class="nav-left">
-        <a class="nav-item" href="https://gsquire.github.io/static/"><h1 class="title is-4">Garrett&#39;s Blog</h1></a>
-      </div>
-      <div class="nav-right">
-        <nav class="nav-item level is-mobile">
-          
-        </nav>
-      </div>
-    </nav>
-  </div>
-</section>
 
-<section class="section">
-  <div class="container">
-    <h2 class="subtitle is-6">June 14, 2016</h2>
-    <h1 class="title">REST in Rust</h1>
+<meta property="article:published_time" content="2016-06-14T14:56:18-07:00"/>
+
+<meta property="article:modified_time" content="2016-06-14T14:56:18-07:00"/>
+
+
+
+
+
+
+
+
+
+
+
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="REST in Rust"/>
+<meta name="twitter:description" content="Writing a simple REST app in Rust If you have ever worked with HTTP in Rust, you have probably referred to the hyper crate. Hyper provides a safe abstraction over HTTP and offers both a client and server type. It is also the foundation for frameworks such as Iron and Nickel.
+One of the coolest things about hyper is that its server can be started with anything that implements the Handler trait."/>
+
+
+
+<meta itemprop="name" content="REST in Rust">
+<meta itemprop="description" content="Writing a simple REST app in Rust If you have ever worked with HTTP in Rust, you have probably referred to the hyper crate. Hyper provides a safe abstraction over HTTP and offers both a client and server type. It is also the foundation for frameworks such as Iron and Nickel.
+One of the coolest things about hyper is that its server can be started with anything that implements the Handler trait.">
+
+
+<meta itemprop="datePublished" content="2016-06-14T14:56:18-07:00" />
+<meta itemprop="dateModified" content="2016-06-14T14:56:18-07:00" />
+<meta itemprop="wordCount" content="475">
+
+
+
+<meta itemprop="keywords" content="" />
+
+
+<link rel="stylesheet" href="css/layout.css" />
+<style type="text/css">
+body {
+  background-color: #101010;
+  color: #eee8cd;
+}
+
+a { color: #eee8cd; }
+
+pre {
+  background: #1d1f21;
+  border: 1px solid #eee8cd;
+  border-radius: 5px;
+}
+
+code {
+  background: #1d1f21;
+}
+
+blockquote {
+  background: #1d1f21;
+  border-left: 3px solid #eee8cd;
+}
+
+table {
+  margin: 1em auto;
+  border-collapse: collapse;
+}
+
+table, th, td {
+  border: 1px solid #eee8cd;
+}
+
+th {
+  background: #eee8cd;
+  color: #101010;
+}
+
+.siteTitle a { color: #5f8c96; }
+
+.post .content h1{ color: #5f8c96; }
+.post .content h2{ color: #5f8c96; }
+.post .content h3{ color: #5f8c96; }
+.post .content h4{ color: #5f8c96; }
+.post .content h5{ color: #5f8c96; }
+.post .content h6{ color: #5f8c96; }
+.post .content a:hover { color: #5f8c96; }
+.social-link:hover { color: #5f8c96; }
+.nav-item-title:hover { color: #5f8c96; }
+.tag a:hover { color: #5f8c96; }
+.copyright { color: #404040 }
+.poweredby { color: #404040 }
+.poweredby a { color: #404040; }
+.post-preview .title a{ color: #5f8c96; }
+.content-item a:hover{
+  text-decoration: underline;
+  color: #5f8c96;
+}
+.post-list .title { color: #5f8c96; }
+.rmore { color: #5f8c96; }
+.terms .term a:hover {
+  text-decoration: underline;
+  color: #5f8c96;
+}
+
+</style>
+
+
+
+<title>
+
+
+     REST in Rust 
+
+</title>
+
+</head>
+
+
+<body>
+<div class="main">
+<header>
+
+<div class="header-bar">
+
+  <nav>
+    <div class="siteTitle">
+      <a href="https://gsquire.github.io/static/">Garrett&#39;s Blog</a>
+    </div> 
+
     
-    <div class="content">
-      
+    
+
+  </nav>
+</div>
+
+  
+<div class="social-links-header">
+
+  
+  <a href="mailto:garrettsquire@gmail.com"><div class="social-link">email</div></a>
+  
+
+  
+  <a href="https://github.com/gsquire" target="_blank"><div class="social-link">gh</div></a>
+  
+
+  
+
+  
+  <a href="https://twitter.com/garrettsquire" target="_blank"><div class="social-link">twtr</div></a>
+  
+
+  
+
+</div>
+
+
+</header>
+
+
+<article class="post">
+    <h1 class="title"> REST in Rust </h1>
+    <div class="content"> 
 
 <h1 id="writing-a-simple-rest-app-in-rust">Writing a simple REST app in Rust</h1>
 
@@ -108,25 +251,63 @@ you don&rsquo;t need to provide groups and can just add routes like &ldquo;/v1/s
 <h2 id="questions-or-thoughts">Questions or thoughts?</h2>
 
 <p>Feel free to contact me through the email on my <a href="https://github.com/gsquire">GitHub</a> profile.</p>
+ </div>
+    <footer class="post-footer">
 
-    </div>
+  <div class="post-footer-data">
+    
+<div class="tags">
+    
+</div>
+
+    <div class="date"> Jun 14, 2016 </div>
   </div>
-</section>
+
+</footer>
 
 
-<section class="section">
-  <div class="container has-text-centered">
-    <p></p>
+  
+
+
+</article>
+
+  <footer>
+
+  <div class="social-links-footer">
+
+  
+  <a href="mailto:garrettsquire@gmail.com"><div class="social-link">Email</div></a>
+  
+
+  
+  <a href="https://github.com/gsquire" target="_blank"><div class="social-link">GitHub</div></a>
+  
+
+  
+
+  
+  <a href="https://twitter.com/garrettsquire" target="_blank"><div class="social-link">Twitter</div></a>
+  
+
+  
+
+  <div class="social-link">
+  <a href="https://gsquire.github.io/static/index.xml" target="_blank">RSS</a>
   </div>
-</section>
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js" integrity="sha256-KbfTjB0WZ8vvXngdpJGY3Yp3xKk+tttbqClO11anCIU=" crossorigin="anonymous"></script>
 
-<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/languages/go.min.js"></script>
+</div>
 
-<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/languages/rust.min.js"></script>
 
-<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/languages/shell.min.js"></script>
+  <div class="copyright">  </div>
 
-<script>hljs.initHighlightingOnLoad();</script>
+  <div class="poweredby">
+    Powered by <a href="https://gohugo.io/">Hugo</a>.
+  </div>
 
+  </footer>
+
+</div> 
+
+</body>
+</html>
 
