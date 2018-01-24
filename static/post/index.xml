@@ -6,10 +6,21 @@
     <description>Recent content in Posts on Garrett&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 10 Jan 2018 19:05:55 -0800</lastBuildDate>
+    <lastBuildDate>Sun, 21 Jan 2018 19:23:57 -0800</lastBuildDate>
     
 	<atom:link href="https://gsquire.github.io/static/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Rust Redis Modules</title>
+      <link>https://gsquire.github.io/static/post/rust-redis-modules/</link>
+      <pubDate>Sun, 21 Jan 2018 19:23:57 -0800</pubDate>
+      
+      <guid>https://gsquire.github.io/static/post/rust-redis-modules/</guid>
+      <description>Redis Modules with Rust With newer versions of Redis, the modules API lets users extend Redis&amp;rsquo; already powerful functionality. To quote the Redis website:
+ Redis modules make possible to extend Redis functionality using external modules, implementing new Redis commands at a speed and with features similar to what can be done inside the core itself.
+ The module API is defined in a single header file with the main goal of writing them in C but also allowing for any language with C bindings.</description>
+    </item>
     
     <item>
       <title>Rust In 2018</title>

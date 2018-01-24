@@ -7,7 +7,7 @@
 <meta name="description" content="" />
 <meta name="keywords" content="" />
 <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
-<meta name="generator" content="Hugo 0.32.3" />
+<meta name="generator" content="Hugo 0.34" />
 
 <link rel="canonical" href="https://gsquire.github.io/static/post/rest-in-rust/">
 <base href="https://gsquire.github.io/static/" />
@@ -46,7 +46,7 @@ One of the coolest things about hyper is that its server can be started with any
 
 <meta itemprop="datePublished" content="2016-06-14T14:56:18-07:00" />
 <meta itemprop="dateModified" content="2016-06-14T14:56:18-07:00" />
-<meta itemprop="wordCount" content="475">
+<meta itemprop="wordCount" content="442">
 
 
 
@@ -57,14 +57,14 @@ One of the coolest things about hyper is that its server can be started with any
 <style type="text/css">
 body {
   background-color: #101010;
-  color: #eee8cd;
+  color: #c0c0c0;
 }
 
-a { color: #eee8cd; }
+a { color: #c0c0c0; }
 
 pre {
   background: #1d1f21;
-  border: 1px solid #eee8cd;
+  border: 1px solid #c0c0c0;
   border-radius: 5px;
 }
 
@@ -74,7 +74,7 @@ code {
 
 blockquote {
   background: #1d1f21;
-  border-left: 3px solid #eee8cd;
+  border-left: 3px solid #c0c0c0;
 }
 
 table {
@@ -83,11 +83,11 @@ table {
 }
 
 table, th, td {
-  border: 1px solid #eee8cd;
+  border: 1px solid #c0c0c0;
 }
 
 th {
-  background: #eee8cd;
+  background: #c0c0c0;
   color: #101010;
 }
 
@@ -211,33 +211,30 @@ type that can match patterns you provide and call corresponding functions accord
 to the <code>Request</code> and <code>Response</code> along with a type that captures matches in the URI.</p>
 
 <h2 id="a-simple-example">A simple example</h2>
-
-<pre><code class="language-rust">extern crate hyper;
-extern crate reroute;
-
-use hyper::Server;
-use hyper::server::{Request, Response};
-use reroute::{Captures, Router};
-
-fn digit_handler(_: Request, res: Response, c: Captures) {
-    println!(&quot;captures: {:?}&quot;, c);
-    res.send(b&quot;It works for digits!&quot;).unwrap();
-}
-
-fn main() {
-    let mut router = Router::new();
-
-    // Use raw strings so you don't need to escape patterns.
-    router.get(r&quot;/(\d+)&quot;, digit_handler);
-
-    router.finalize().unwrap();
-
-    // You can pass the router to hyper's Server's handle function as it
-    // implements the Handle trait.
-    Server::http(&quot;127.0.0.1:3000&quot;).unwrap().handle(router).unwrap();
-}
-</code></pre>
-
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#6ab825;font-weight:bold">extern</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">crate</span><span style="color:#666"> </span>hyper;<span style="color:#666">
+</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">extern</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">crate</span><span style="color:#666"> </span>reroute;<span style="color:#666">
+</span><span style="color:#666">
+</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">use</span><span style="color:#666"> </span>hyper::Server;<span style="color:#666">
+</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">use</span><span style="color:#666"> </span>hyper::server::{Request,<span style="color:#666"> </span>Response};<span style="color:#666">
+</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">use</span><span style="color:#666"> </span>reroute::{Captures,<span style="color:#666"> </span>Router};<span style="color:#666">
+</span><span style="color:#666">
+</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">fn</span> <span style="color:#447fcf">digit_handler</span>(_: <span style="color:#447fcf">Request</span>,<span style="color:#666"> </span>res: <span style="color:#447fcf">Response</span>,<span style="color:#666"> </span>c: <span style="color:#447fcf">Captures</span>)<span style="color:#666"> </span>{<span style="color:#666">
+</span><span style="color:#666">    </span>println!(<span style="color:#ed9d13">&#34;captures: {:?}&#34;</span>,<span style="color:#666"> </span>c);<span style="color:#666">
+</span><span style="color:#666">    </span>res.send(<span style="color:#ed9d13">b&#34;It works for digits!&#34;</span>).unwrap();<span style="color:#666">
+</span><span style="color:#666"></span>}<span style="color:#666">
+</span><span style="color:#666">
+</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">fn</span> <span style="color:#447fcf">main</span>()<span style="color:#666"> </span>{<span style="color:#666">
+</span><span style="color:#666">    </span><span style="color:#6ab825;font-weight:bold">let</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">mut</span><span style="color:#666"> </span>router<span style="color:#666"> </span>=<span style="color:#666"> </span>Router::new();<span style="color:#666">
+</span><span style="color:#666">
+</span><span style="color:#666">    </span><span style="color:#999;font-style:italic">// Use raw strings so you don&#39;t need to escape patterns.
+</span><span style="color:#999;font-style:italic"></span><span style="color:#666">    </span>router.get(<span style="color:#ed9d13">r&#34;/(\d+)&#34;</span>,<span style="color:#666"> </span>digit_handler);<span style="color:#666">
+</span><span style="color:#666">
+</span><span style="color:#666">    </span>router.finalize().unwrap();<span style="color:#666">
+</span><span style="color:#666">
+</span><span style="color:#666">    </span><span style="color:#999;font-style:italic">// You can pass the router to hyper&#39;s Server&#39;s handle function as it
+</span><span style="color:#999;font-style:italic"></span><span style="color:#666">    </span><span style="color:#999;font-style:italic">// implements the Handle trait.
+</span><span style="color:#999;font-style:italic"></span><span style="color:#666">    </span>Server::http(<span style="color:#ed9d13">&#34;127.0.0.1:3000&#34;</span>).unwrap().handle(router).unwrap();<span style="color:#666">
+</span><span style="color:#666"></span>}</code></pre></div>
 <p>Since <code>Router</code> implements the <code>Handler</code> trait, hyper&rsquo;s <code>Server</code> can use it to respond
 to connections. With this in mind, you can write a REST app in a few lines and extend this
 functionality to suit your own needs. The <code>Captures</code> type gives you matches in your URI that the regex

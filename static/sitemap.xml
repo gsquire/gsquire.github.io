@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://gsquire.github.io/static/post/rust-redis-modules/</loc>
+    <lastmod>2018-01-21T19:23:57-08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://gsquire.github.io/static/post/rust-in-2018/</loc>
     <lastmod>2018-01-10T19:05:55-08:00</lastmod>
   </url>
@@ -24,13 +29,13 @@
   
   <url>
     <loc>https://gsquire.github.io/static/</loc>
-    <lastmod>2018-01-10T19:05:55-08:00</lastmod>
+    <lastmod>2018-01-21T19:23:57-08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://gsquire.github.io/static/post/</loc>
-    <lastmod>2018-01-10T19:05:55-08:00</lastmod>
+    <lastmod>2018-01-21T19:23:57-08:00</lastmod>
     <priority>0</priority>
   </url>
   
