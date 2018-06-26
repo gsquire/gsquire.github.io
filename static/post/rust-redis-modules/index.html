@@ -7,7 +7,7 @@
 <meta name="description" content="" />
 <meta name="keywords" content="" />
 <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
-<meta name="generator" content="Hugo 0.34" />
+<meta name="generator" content="Hugo 0.42.1" />
 
 <link rel="canonical" href="https://gsquire.github.io/static/post/rust-redis-modules/">
 <base href="https://gsquire.github.io/static/" />
@@ -34,7 +34,8 @@
 
 
 
-<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Rust Redis Modules"/>
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Rust Redis Modules"/>
 <meta name="twitter:description" content="Redis Modules with Rust With newer versions of Redis, the modules API lets users extend Redis&rsquo; already powerful functionality. To quote the Redis website:
  Redis modules make possible to extend Redis functionality using external modules, implementing new Redis commands at a speed and with features similar to what can be done inside the core itself.
  The module API is defined in a single header file with the main goal of writing them in C but also allowing for any language with C bindings."/>
@@ -224,7 +225,8 @@ to store new data or read values from a given key. Here is the definition of the
 </span><span style="color:#ed9d13"></span><span style="color:#cd2828;font-weight:bold">#[derive(Clone, Debug, Default)]</span><span style="color:#666">
 </span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">pub</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">struct</span> <span style="color:#447fcf">MultiMap</span><span style="color:#666"> </span>{<span style="color:#666">
 </span><span style="color:#666">    </span>inner: <span style="color:#447fcf">HashMap</span>&lt;<span style="color:#24909d">String</span>,<span style="color:#666"> </span><span style="color:#24909d">Vec</span>&lt;<span style="color:#24909d">String</span>&gt;&gt;,<span style="color:#666">
-</span><span style="color:#666"></span>}</code></pre></div>
+</span><span style="color:#666"></span>}<span style="color:#666">
+</span><span style="color:#666"></span></code></pre></div>
 <p>Since this is really just a <a href="https://doc.rust-lang.org/std/collections/struct.HashMap.html"><code>HashMap</code></a>
 my implementation just used its available functions for everything I needed. Given the power of
 Rust&rsquo;s trait-based generics I was able to write a simple insert function for example.</p>
@@ -236,7 +238,8 @@ Rust&rsquo;s trait-based generics I was able to write a simple insert function f
 </span><span style="color:#666"></span>{<span style="color:#666">
 </span><span style="color:#666">    </span><span style="color:#6ab825;font-weight:bold">let</span><span style="color:#666"> </span>entry<span style="color:#666"> </span>=<span style="color:#666"> </span>self.inner.entry(key.into()).or_insert_with(||<span style="color:#666"> </span>vec![]);<span style="color:#666">
 </span><span style="color:#666">    </span>values.into_iter().for_each(|item|<span style="color:#666"> </span>entry.push(item));<span style="color:#666">
-</span><span style="color:#666"></span>}</code></pre></div>
+</span><span style="color:#666"></span>}<span style="color:#666">
+</span><span style="color:#666"></span></code></pre></div>
 <p>The <code>MultiMap</code> module turned out to be less than eighty lines allowing me to focus on using the
 Redis API to implement it natively.</p>
 
@@ -267,7 +270,8 @@ for the number of arguments for the function:</p>
 </span><span style="color:#666">
 </span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">if</span><span style="color:#666"> </span>argc<span style="color:#666"> </span>!=<span style="color:#666"> </span><span style="color:#3677a9">3</span><span style="color:#666"> </span>{<span style="color:#666">
 </span><span style="color:#666">    </span><span style="color:#6ab825;font-weight:bold">return</span><span style="color:#666"> </span>ffi::RedisModule_WrongArity.unwrap()(ctx);<span style="color:#666">
-</span><span style="color:#666"></span>}</code></pre></div>
+</span><span style="color:#666"></span>}<span style="color:#666">
+</span><span style="color:#666"></span></code></pre></div>
 <p>Then I unpack the arguments from the C array into a Rust slice and then grab the key name denoted
 by the second argument in the slice:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#6ab825;font-weight:bold">let</span><span style="color:#666"> </span>args<span style="color:#666"> </span>=<span style="color:#666"> </span>slice::from_raw_parts(argv,<span style="color:#666"> </span>argc<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">as</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">usize</span>);<span style="color:#666">
@@ -275,11 +279,13 @@ by the second argument in the slice:</p>
 </span><span style="color:#666">    </span>ctx,<span style="color:#666">
 </span><span style="color:#666">    </span>args[<span style="color:#3677a9">1</span>],<span style="color:#666">
 </span><span style="color:#666">    </span>(ffi::REDISMODULE_READ<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">as</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">i32</span>)<span style="color:#666"> </span>|<span style="color:#666"> </span>(ffi::REDISMODULE_WRITE<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">as</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">i32</span>),<span style="color:#666">
-</span><span style="color:#666"></span>)<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">as</span><span style="color:#666"> </span>*<span style="color:#6ab825;font-weight:bold">mut</span><span style="color:#666"> </span>ffi::RedisModuleKey;</code></pre></div>
+</span><span style="color:#666"></span>)<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">as</span><span style="color:#666"> </span>*<span style="color:#6ab825;font-weight:bold">mut</span><span style="color:#666"> </span>ffi::RedisModuleKey;<span style="color:#666">
+</span><span style="color:#666"></span></code></pre></div>
 <p>After this, we do a validity check on the key to make sure it is actually a <code>MultiMap</code> type:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#6ab825;font-weight:bold">if</span><span style="color:#666"> </span>invalid_key_type(key)<span style="color:#666"> </span>{<span style="color:#666">
 </span><span style="color:#666">    </span><span style="color:#6ab825;font-weight:bold">return</span><span style="color:#666"> </span>reply_with_error(ctx,<span style="color:#666"> </span>ffi::ERRORMSG_WRONGTYPE);<span style="color:#666">
-</span><span style="color:#666"></span>}</code></pre></div>
+</span><span style="color:#666"></span>}<span style="color:#666">
+</span><span style="color:#666"></span></code></pre></div>
 <p>Then we can work with the key and access the Rust API that I created:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#6ab825;font-weight:bold">let</span><span style="color:#666"> </span>map<span style="color:#666"> </span>=<span style="color:#666"> </span>ffi::RedisModule_ModuleTypeGetValue.unwrap()(key)<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">as</span><span style="color:#666"> </span>*<span style="color:#6ab825;font-weight:bold">mut</span><span style="color:#666"> </span>MultiMap;<span style="color:#666">
 </span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">if</span><span style="color:#666"> </span>map.is_null()<span style="color:#666"> </span>{<span style="color:#666">
@@ -288,7 +294,8 @@ by the second argument in the slice:</p>
 </span><span style="color:#666">    </span><span style="color:#6ab825;font-weight:bold">let</span><span style="color:#666"> </span>m<span style="color:#666"> </span>=<span style="color:#666"> </span>&amp;<span style="color:#6ab825;font-weight:bold">mut</span><span style="color:#666"> </span>*map;<span style="color:#666">
 </span><span style="color:#666">    </span><span style="color:#6ab825;font-weight:bold">let</span><span style="color:#666"> </span>map_key<span style="color:#666"> </span>=<span style="color:#666"> </span>string_from_module_string(args[<span style="color:#3677a9">2</span>]);<span style="color:#666">
 </span><span style="color:#666">    </span>ffi::RedisModule_ReplyWithLongLong.unwrap()(ctx,<span style="color:#666"> </span>m.key_len(map_key)<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">as</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">i64</span>);<span style="color:#666">
-</span><span style="color:#666"></span>}</code></pre></div>
+</span><span style="color:#666"></span>}<span style="color:#666">
+</span><span style="color:#666"></span></code></pre></div>
 <p>This is the function used above to convert a <code>RedisModuleString</code> into something that Rust could use
 while interacting with the <code>MultiMap</code>.</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#ed9d13">/// Perform a lossy conversion of a module string into a `Cow&lt;str&gt;`.
@@ -298,7 +305,8 @@ while interacting with the <code>MultiMap</code>.</p>
 </span><span style="color:#666">    </span><span style="color:#6ab825;font-weight:bold">let</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">mut</span><span style="color:#666"> </span>len<span style="color:#666"> </span>=<span style="color:#666"> </span><span style="color:#3677a9">0</span>;<span style="color:#666">
 </span><span style="color:#666">    </span><span style="color:#6ab825;font-weight:bold">let</span><span style="color:#666"> </span>c_str<span style="color:#666"> </span>=<span style="color:#666"> </span>ffi::RedisModule_StringPtrLen.unwrap()(s,<span style="color:#666"> </span>&amp;<span style="color:#6ab825;font-weight:bold">mut</span><span style="color:#666"> </span>len);<span style="color:#666">
 </span><span style="color:#666">    </span>CStr::from_ptr(c_str).to_string_lossy()<span style="color:#666">
-</span><span style="color:#666"></span>}</code></pre></div>
+</span><span style="color:#666"></span>}<span style="color:#666">
+</span><span style="color:#666"></span></code></pre></div>
 <p>We end our function by returning an integer to denote the success or failure following the Unix
 tradition of zero and one respectively.</p>
 

@@ -6,10 +6,19 @@
     <description>Recent content on Garrett&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 21 Jan 2018 19:23:57 -0800</lastBuildDate>
+    <lastBuildDate>Sun, 24 Jun 2018 10:44:31 -0700</lastBuildDate>
     
 	<atom:link href="https://gsquire.github.io/static/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>A Rusty Go at Channels</title>
+      <link>https://gsquire.github.io/static/post/a-rusty-go-at-channels/</link>
+      <pubDate>Sun, 24 Jun 2018 10:44:31 -0700</pubDate>
+      
+      <guid>https://gsquire.github.io/static/post/a-rusty-go-at-channels/</guid>
+      <description>Channels Channels are a useful concurrency primitive that enable separate processes to safely communicate without the need for explicit synchronization. The term processes is used here to loosely describe independent threads of execution within a program. This can be an OS level thread or a runtime level thread. Channels can be seen as a pipe to connect these processes and allow them to share memory with one another. For example a program could spawn any number of processes along with a channel to transmit results that it gathers.</description>
+    </item>
     
     <item>
       <title>Rust Redis Modules</title>

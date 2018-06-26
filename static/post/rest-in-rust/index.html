@@ -7,7 +7,7 @@
 <meta name="description" content="" />
 <meta name="keywords" content="" />
 <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
-<meta name="generator" content="Hugo 0.34" />
+<meta name="generator" content="Hugo 0.42.1" />
 
 <link rel="canonical" href="https://gsquire.github.io/static/post/rest-in-rust/">
 <base href="https://gsquire.github.io/static/" />
@@ -33,7 +33,8 @@ One of the coolest things about hyper is that its server can be started with any
 
 
 
-<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="REST in Rust"/>
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="REST in Rust"/>
 <meta name="twitter:description" content="Writing a simple REST app in Rust If you have ever worked with HTTP in Rust, you have probably referred to the hyper crate. Hyper provides a safe abstraction over HTTP and offers both a client and server type. It is also the foundation for frameworks such as Iron and Nickel.
 One of the coolest things about hyper is that its server can be started with anything that implements the Handler trait."/>
 
@@ -234,7 +235,8 @@ to the <code>Request</code> and <code>Response</code> along with a type that cap
 </span><span style="color:#666">    </span><span style="color:#999;font-style:italic">// You can pass the router to hyper&#39;s Server&#39;s handle function as it
 </span><span style="color:#999;font-style:italic"></span><span style="color:#666">    </span><span style="color:#999;font-style:italic">// implements the Handle trait.
 </span><span style="color:#999;font-style:italic"></span><span style="color:#666">    </span>Server::http(<span style="color:#ed9d13">&#34;127.0.0.1:3000&#34;</span>).unwrap().handle(router).unwrap();<span style="color:#666">
-</span><span style="color:#666"></span>}</code></pre></div>
+</span><span style="color:#666"></span>}<span style="color:#666">
+</span><span style="color:#666"></span></code></pre></div>
 <p>Since <code>Router</code> implements the <code>Handler</code> trait, hyper&rsquo;s <code>Server</code> can use it to respond
 to connections. With this in mind, you can write a REST app in a few lines and extend this
 functionality to suit your own needs. The <code>Captures</code> type gives you matches in your URI that the regex
