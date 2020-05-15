@@ -7,7 +7,7 @@
 <meta name="description" content="" />
 <meta name="keywords" content="" />
 <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
-<meta name="generator" content="Hugo 0.42.1" />
+<meta name="generator" content="Hugo 0.70.0" />
 
 <link rel="canonical" href="https://gsquire.github.io/static/post/a-rusty-go-at-channels/">
 <base href="https://gsquire.github.io/static/" />
@@ -15,41 +15,23 @@
 <meta property="og:description" content="Channels Channels are a useful concurrency primitive that enable separate processes to safely communicate without the need for explicit synchronization. The term processes is used here to loosely describe independent threads of execution within a program. This can be an OS level thread or a runtime level thread. Channels can be seen as a pipe to connect these processes and allow them to share memory with one another. For example a program could spawn any number of processes along with a channel to transmit results that it gathers." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://gsquire.github.io/static/post/a-rusty-go-at-channels/" />
-
-
-
-<meta property="article:published_time" content="2018-06-24T10:44:31-07:00"/>
-
-<meta property="article:modified_time" content="2018-06-24T10:44:31-07:00"/>
-
-
-
-
-
-
-
-
-
-
+<meta property="article:published_time" content="2018-06-24T10:44:31-07:00" />
+<meta property="article:modified_time" content="2018-06-24T10:44:31-07:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="A Rusty Go at Channels"/>
 <meta name="twitter:description" content="Channels Channels are a useful concurrency primitive that enable separate processes to safely communicate without the need for explicit synchronization. The term processes is used here to loosely describe independent threads of execution within a program. This can be an OS level thread or a runtime level thread. Channels can be seen as a pipe to connect these processes and allow them to share memory with one another. For example a program could spawn any number of processes along with a channel to transmit results that it gathers."/>
 
 
-
 <meta itemprop="name" content="A Rusty Go at Channels">
 <meta itemprop="description" content="Channels Channels are a useful concurrency primitive that enable separate processes to safely communicate without the need for explicit synchronization. The term processes is used here to loosely describe independent threads of execution within a program. This can be an OS level thread or a runtime level thread. Channels can be seen as a pipe to connect these processes and allow them to share memory with one another. For example a program could spawn any number of processes along with a channel to transmit results that it gathers.">
-
-
 <meta itemprop="datePublished" content="2018-06-24T10:44:31-07:00" />
 <meta itemprop="dateModified" content="2018-06-24T10:44:31-07:00" />
-<meta itemprop="wordCount" content="1566">
+<meta itemprop="wordCount" content="1561">
 
 
 
 <meta itemprop="keywords" content="" />
-
 
 <link rel="stylesheet" href="css/layout.css" />
 <style type="text/css">
@@ -151,7 +133,7 @@ th {
 <div class="social-links-header">
 
   
-  <a href="mailto:garrettsquire@gmail.com"><div class="social-link">email</div></a>
+  <a href="mailto:mail@garrettsquire.com"><div class="social-link">email</div></a>
   
 
   
@@ -174,10 +156,7 @@ th {
 
 <article class="post">
     <h1 class="title"> A Rusty Go at Channels </h1>
-    <div class="content"> 
-
-<h2 id="channels">Channels</h2>
-
+    <div class="content"> <h2 id="channels">Channels</h2>
 <p>Channels are a useful concurrency primitive that enable separate processes to safely communicate
 without the need for explicit synchronization. The term processes is used here to loosely describe
 independent threads of execution within a program. This can be an OS level thread or a runtime level
@@ -187,9 +166,7 @@ channel to transmit results that it gathers. The main process could be configure
 results and handle them accordingly. Not having to use a mutex or other form of guard can be a
 useful tool when writing concurrent programs. The rest of the post will dive into channels in both
 Go and Rust and how their channel support overlaps.</p>
-
 <h2 id="channels-in-go">Channels in Go</h2>
-
 <p>Go offers channels in the form of a built in type that can be used with any other type that Go
 allows. Channels can be declared as send only or receive only in type declarations or function
 arguments which gives the program another level of type safety. In order to create a channel you can
@@ -201,8 +178,8 @@ implications that I will cover later on. Below is an example of making both type
 
 <span style="color:#999;font-style:italic">// Declare a buffered channel of integers.
 </span><span style="color:#999;font-style:italic">// This means that the channel can only contain one value at a time.
-</span><span style="color:#999;font-style:italic"></span>b := <span style="color:#24909d">make</span>(<span style="color:#6ab825;font-weight:bold">chan</span> <span style="color:#6ab825;font-weight:bold">int</span>, <span style="color:#3677a9">1</span>)</code></pre></div>
-<p>Sending and receving values with a channel is done with the <code>&lt;-</code> operator which reads like a
+</span><span style="color:#999;font-style:italic"></span>b := <span style="color:#24909d">make</span>(<span style="color:#6ab825;font-weight:bold">chan</span> <span style="color:#6ab825;font-weight:bold">int</span>, <span style="color:#3677a9">1</span>)
+</code></pre></div><p>Sending and receving values with a channel is done with the <code>&lt;-</code> operator which reads like a
 sequential execution.</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">n := <span style="color:#24909d">make</span>(<span style="color:#6ab825;font-weight:bold">chan</span> <span style="color:#6ab825;font-weight:bold">int</span>)
 
@@ -212,18 +189,16 @@ sequential execution.</p>
 }()
 
 <span style="color:#999;font-style:italic">// The receive operation uses `&lt;-` as well but is flipped to the front instead.
-</span><span style="color:#999;font-style:italic"></span>fmt.Printf(<span style="color:#ed9d13">&#34;i received %d\n&#34;</span>, &lt;-n)</code></pre></div>
-<p>Go&rsquo;s channels enable many useful features when dealing with concurrent programs. Go offers
+</span><span style="color:#999;font-style:italic"></span>fmt.<span style="color:#447fcf">Printf</span>(<span style="color:#ed9d13">&#34;i received %d\n&#34;</span>, &lt;-n)
+</code></pre></div><p>Go&rsquo;s channels enable many useful features when dealing with concurrent programs. Go offers
 concurrency in the form of &ldquo;goroutines&rdquo; which are lightweight runtime level threads that are mapped
 onto OS level threads. These goroutines have their own stack and are very cheap enabling the
 creation of hundreds or thousands of them at any one point. They are spawned with the <code>go</code> keyword.
 With that in mind, channels allow goroutines to work with one another in a safe way.</p>
-
 <p>Whether or not a channel is buffered is an important distinction. Non-buffered channels will block
 a goroutine on a send operation if no other goroutine is ready to receive. However a buffered channel
 will only block after its buffer is filled. This is an important feature to keep in mind when
 designing a program as it can cause deadlocks if used incorrectly.</p>
-
 <p>Go also allows the use of the <code>range</code> keyword to iterate over a channel. The only way to stop this
 iteration is by using the <code>close</code> keyword to alert the receiver that there are no more values left.
 This is most likely the only time you would need to use the <code>close</code> keyword.</p>
@@ -242,9 +217,9 @@ This is most likely the only time you would need to use the <code>close</code> k
 
 <span style="color:#999;font-style:italic">// This will iterate until the sending goroutine calls `close`.
 </span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">for</span> i := <span style="color:#6ab825;font-weight:bold">range</span> c {
-    fmt.Println(i)
-}</code></pre></div>
-<p>Another useful feature of Go is the <code>select</code> statement. The <code>select</code> statement allows you to perform
+    fmt.<span style="color:#447fcf">Println</span>(i)
+}
+</code></pre></div><p>Another useful feature of Go is the <code>select</code> statement. The <code>select</code> statement allows you to perform
 a blocking operation on a set of channels or a default operation if none are ready. If more than one
 operation is ready then one is chosen at random. Below is an example of using <code>select</code> to manage
 multiple channel operations along with a default one.</p>
@@ -253,22 +228,19 @@ multiple channel operations along with a default one.</p>
 </span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">case</span> c &lt;- i:
     <span style="color:#999;font-style:italic">// See if we should leave this by receiving a value from this channel.
 </span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">case</span> j := &lt;- quit:
-        fmt.Printf(<span style="color:#ed9d13">&#34;got %s, leaving...&#34;</span>, j)
+        fmt.<span style="color:#447fcf">Printf</span>(<span style="color:#ed9d13">&#34;got %s, leaving...&#34;</span>, j)
     <span style="color:#999;font-style:italic">// Just print waiting if either of the operations can&#39;t proceed. This is just an example
 </span><span style="color:#999;font-style:italic"></span>    <span style="color:#999;font-style:italic">// and may not be useful in actual code.
 </span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">default</span>:
-        fmt.Println(<span style="color:#ed9d13">&#34;waiting...&#34;</span>)
-}</code></pre></div>
-<p>This is by no means an exhaustive list of things you can do with a channel in Go but it highlights
+        fmt.<span style="color:#447fcf">Println</span>(<span style="color:#ed9d13">&#34;waiting...&#34;</span>)
+}
+</code></pre></div><p>This is by no means an exhaustive list of things you can do with a channel in Go but it highlights
 most of the use cases.</p>
-
 <h2 id="channels-in-rust">Channels in Rust</h2>
-
 <p>Rust does not have the notion of builtin channels like Go but it does offer both flavors of channels
 in the standard library. These are MPSC or &ldquo;multiple producer, single consumer&rdquo; enabled and can
 be shared across threads. Unlike Go, Rust does not offer runtime threading and instead allows you
 to spawn OS level threads through its standard library.</p>
-
 <p>Below is an example of configuring a non-buffered channel in Rust.</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#999;font-style:italic">// The standard library imports.
 </span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">use</span><span style="color:#666"> </span>std::sync::mpsc::channel;<span style="color:#666">
@@ -286,18 +258,15 @@ to spawn OS level threads through its standard library.</p>
 </span><span style="color:#666">
 </span><span style="color:#666"></span><span style="color:#999;font-style:italic">// Receive the value and ignore the error by calling `unwrap`.
 </span><span style="color:#999;font-style:italic"></span>println!(<span style="color:#ed9d13">&#34;received value {:?}&#34;</span>,<span style="color:#666"> </span>rx.recv().unwrap());<span style="color:#666">
-</span><span style="color:#666"></span></code></pre></div>
-<p>What&rsquo;s different here is that the <code>send</code> call will not block even if there is no receiver to accept
+</span></code></pre></div><p>What&rsquo;s different here is that the <code>send</code> call will not block even if there is no receiver to accept
 it. The <code>recv</code> call will block however until a value is sent. Therefore these channels are unlike
 Go&rsquo;s and cannot be used to synchronize two threads. The only way to achieve that is by using a
 buffered channel with a size of zero.</p>
-
 <p>The main inspiration for this blog post however is the newer release of a crate (Rust&rsquo;s form of
 libraries) called <a href="https://github.com/crossbeam-rs/crossbeam-channel">crossbeam-channel</a>. This
 library aims to bring Go&rsquo;s channels to Rust enabling you to take advantage of the guarantees that
 they support. The feature set is not going to be one to one but the similarities outnumber the
 differences.</p>
-
 <p>Using the types in this crate, we can illustrate analogous examples to the Go snippets above. To
 start we can show how to send values on a channel.</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#6ab825;font-weight:bold">use</span><span style="color:#666"> </span>crossbeam_channel<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">as</span><span style="color:#666"> </span>channel;<span style="color:#666">
@@ -320,12 +289,10 @@ start we can show how to send values on a channel.</p>
 </span><span style="color:#666"></span>s.send(<span style="color:#3677a9">1</span>);<span style="color:#666">
 </span><span style="color:#666"></span><span style="color:#999;font-style:italic">// This would block until the receiving half read the value!
 </span><span style="color:#999;font-style:italic"></span>s.send(<span style="color:#3677a9">2</span>);<span style="color:#666">
-</span><span style="color:#666"></span></code></pre></div>
-<p>Although crossbeam-channel can&rsquo;t use a special operator like <code>&lt;-</code>, the API is largely the same. We can control
+</span></code></pre></div><p>Although crossbeam-channel can&rsquo;t use a special operator like <code>&lt;-</code>, the API is largely the same. We can control
 the behavior of the channels based on which methods are called on them. The sending half of the
 channel can call <code>send</code> and will block only if it is bounded. The receiving half of the channel
 can either block or not as it supports a <code>recv</code> and <code>try_recv</code> option respectively.</p>
-
 <p>Iteration is also supported by implementing the <a href="https://doc.rust-lang.org/std/iter/trait.Iterator.html">Iterator</a>
 trait for the receiving half. The only difference here is that iteration stops when the sending half
 of the channel is dropped out of scope. One can emulate calling <code>close</code> like you would in Go by using the
@@ -347,8 +314,7 @@ that the sender is out of scope.</p>
 </span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">for</span><span style="color:#666"> </span>item<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">in</span><span style="color:#666"> </span>rx<span style="color:#666"> </span>{<span style="color:#666">
 </span><span style="color:#666">    </span>println!(<span style="color:#ed9d13">&#34;{:?}&#34;</span>,<span style="color:#666"> </span>item);<span style="color:#666">
 </span><span style="color:#666"></span>}<span style="color:#666">
-</span><span style="color:#666"></span></code></pre></div>
-<p>The crossbeam-channel crate also allows you select a channel operation which emulates the <code>select</code>
+</span></code></pre></div><p>The crossbeam-channel crate also allows you select a channel operation which emulates the <code>select</code>
 statement in Go. It will block until an operation is ready or choose a default case if one is
 supplied. It is implemented as a macro in Rust which is expanded to source code at compile time.</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#999;font-style:italic">// We have to declare macro usage since there is also a select macro in the standard library.
@@ -368,9 +334,7 @@ supplied. It is implemented as a macro in Rust which is expanded to source code 
 </span><span style="color:#666">    </span>recv(rx1,<span style="color:#666"> </span>val)<span style="color:#666"> </span>=&gt;<span style="color:#666"> </span>println!(<span style="color:#ed9d13">&#34;got value {:?}&#34;</span>,<span style="color:#666"> </span>val),<span style="color:#666">
 </span><span style="color:#666">    </span>send(tx2,<span style="color:#666"> </span><span style="color:#3677a9">2</span>)<span style="color:#666"> </span>=&gt;<span style="color:#666"> </span>(),<span style="color:#666">
 </span><span style="color:#666"></span>}<span style="color:#666">
-</span><span style="color:#666"></span></code></pre></div>
-<h2 id="putting-it-all-together">Putting it All Together</h2>
-
+</span></code></pre></div><h2 id="putting-it-all-together">Putting it All Together</h2>
 <p>Below is an example of a simulated pool of executors that need to perform some expensive computation.
 The thread pool crate allows me to spawn a number of threads that can execute work.</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#6ab825;font-weight:bold">extern</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">crate</span><span style="color:#666"> </span>crossbeam_channel;<span style="color:#666">
@@ -382,7 +346,7 @@ The thread pool crate allows me to spawn a number of threads that can execute wo
 </span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">use</span><span style="color:#666"> </span>crossbeam_channel<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">as</span><span style="color:#666"> </span>channel;<span style="color:#666">
 </span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">use</span><span style="color:#666"> </span>threadpool::ThreadPool;<span style="color:#666">
 </span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">fn</span> <span style="color:#447fcf">work</span>(tx: <span style="color:#447fcf">channel</span>::Sender&lt;<span style="color:#6ab825;font-weight:bold">usize</span>&gt;,<span style="color:#666"> </span>task: <span style="color:#6ab825;font-weight:bold">usize</span>)<span style="color:#666"> </span>{<span style="color:#666">
+</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">fn</span> <span style="color:#447fcf">work</span>(tx: <span style="color:#447fcf;text-decoration:underline">channel</span>::Sender&lt;<span style="color:#6ab825;font-weight:bold">usize</span>&gt;,<span style="color:#666"> </span>task: <span style="color:#6ab825;font-weight:bold">usize</span>)<span style="color:#666"> </span>{<span style="color:#666">
 </span><span style="color:#666">    </span><span style="color:#999;font-style:italic">// Simulate some expensive work that needs to be done.
 </span><span style="color:#999;font-style:italic"></span><span style="color:#666">    </span><span style="color:#999;font-style:italic">// This will sleep for one second.
 </span><span style="color:#999;font-style:italic"></span><span style="color:#666">    </span>sleep(Duration::new(<span style="color:#3677a9">1</span>,<span style="color:#666"> </span><span style="color:#3677a9">0</span>));<span style="color:#666">
@@ -417,14 +381,11 @@ The thread pool crate allows me to spawn a number of threads that can execute wo
 </span><span style="color:#666">
 </span><span style="color:#666">    </span>println!(<span style="color:#ed9d13">&#34;done with all of the work&#34;</span>);<span style="color:#666">
 </span><span style="color:#666"></span>}<span style="color:#666">
-</span><span style="color:#666"></span></code></pre></div>
-<h2 id="conclusion">Conclusion</h2>
-
+</span></code></pre></div><h2 id="conclusion">Conclusion</h2>
 <p>Channels are a powerful concurrency primitive that enable programs to share memory without the
 overhead of a lock. They offer features such as blocking or non-blocking sends and receives while
 still being straightforward to use. It&rsquo;s much easier to reason about message passing with a channel
 than it is to try and synchronize threads in another fashion.</p>
-
 <p>Thanks for reading! If you have any questions feel free to contact me at the email in my GitHub
 profile.</p>
  </div>
@@ -452,7 +413,7 @@ profile.</p>
   <div class="social-links-footer">
 
   
-  <a href="mailto:garrettsquire@gmail.com"><div class="social-link">Email</div></a>
+  <a href="mailto:mail@garrettsquire.com"><div class="social-link">Email</div></a>
   
 
   

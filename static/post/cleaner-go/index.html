@@ -7,7 +7,7 @@
 <meta name="description" content="" />
 <meta name="keywords" content="" />
 <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
-<meta name="generator" content="Hugo 0.42.1" />
+<meta name="generator" content="Hugo 0.70.0" />
 
 <link rel="canonical" href="https://gsquire.github.io/static/post/cleaner-go/">
 <base href="https://gsquire.github.io/static/" />
@@ -16,22 +16,8 @@
 Luckily the go tool includes a sub-command that will examine Go source and report suspicious lines based on heuristics that the compiler will not catch." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://gsquire.github.io/static/post/cleaner-go/" />
-
-
-
-<meta property="article:published_time" content="2017-03-06T14:30:42-08:00"/>
-
-<meta property="article:modified_time" content="2017-03-06T14:30:42-08:00"/>
-
-
-
-
-
-
-
-
-
-
+<meta property="article:published_time" content="2017-03-06T14:30:42-08:00" />
+<meta property="article:modified_time" content="2017-03-06T14:30:42-08:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Cleaner Go"/>
@@ -39,12 +25,9 @@ Luckily the go tool includes a sub-command that will examine Go source and repor
 Luckily the go tool includes a sub-command that will examine Go source and report suspicious lines based on heuristics that the compiler will not catch."/>
 
 
-
 <meta itemprop="name" content="Cleaner Go">
 <meta itemprop="description" content="Large code bases can become increasingly complex to manage as you add more code while also refactoring what is there already. Even with diligent code reviews, it is easy to gloss over common programming mistakes. Sometimes code can be written in a simpler way. Or perhaps a recent refactor left a few functions in that are no longer used.
 Luckily the go tool includes a sub-command that will examine Go source and report suspicious lines based on heuristics that the compiler will not catch.">
-
-
 <meta itemprop="datePublished" content="2017-03-06T14:30:42-08:00" />
 <meta itemprop="dateModified" content="2017-03-06T14:30:42-08:00" />
 <meta itemprop="wordCount" content="740">
@@ -52,7 +35,6 @@ Luckily the go tool includes a sub-command that will examine Go source and repor
 
 
 <meta itemprop="keywords" content="" />
-
 
 <link rel="stylesheet" href="css/layout.css" />
 <style type="text/css">
@@ -154,7 +136,7 @@ th {
 <div class="social-links-header">
 
   
-  <a href="mailto:garrettsquire@gmail.com"><div class="social-link">email</div></a>
+  <a href="mailto:mail@garrettsquire.com"><div class="social-link">email</div></a>
   
 
   
@@ -177,54 +159,43 @@ th {
 
 <article class="post">
     <h1 class="title"> Cleaner Go </h1>
-    <div class="content"> 
-
-<p>Large code bases can become increasingly complex to manage as you add more code while
+    <div class="content"> <p>Large code bases can become increasingly complex to manage as you add more code while
 also refactoring what is there already. Even with diligent code reviews, it is easy to gloss over
 common programming mistakes. Sometimes code can be written in a simpler way. Or perhaps a recent
 refactor left a few functions in that are no longer used.</p>
-
 <p>Luckily the <code>go</code> tool includes a sub-command that will examine Go source and report suspicious lines
 based on heuristics that the compiler will not catch. You can run <code>go vet</code> over you entire source
 tree as such:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">go vet ./...</code></pre></div>
-<p>The vet sub-command is limited by what it catches but is a good first pass that can catch errors
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">go vet ./...
+</code></pre></div><p>The vet sub-command is limited by what it catches but is a good first pass that can catch errors
 that a developer might not.</p>
-
 <h2 id="static-analysis">Static Analysis</h2>
-
 <p>Another set of tools for analyzing your Go code is under the <a href="https://github.com/dominikh/go-tools">go-tools</a>
 repository. These commands are a great addition to <code>go vet</code> in the sense that they provide a much more
 extensive review of your source. Each tool can be installed with <code>go get</code> if you wish to pick out
 certain ones you find useful.</p>
-
 <p>Below are some examples of the tools I find most valuable. Even though these
 examples are contrived, they will compile and pass <code>go vet</code>.</p>
-
 <h4 id="simplifying-code">Simplifying Code</h4>
-
 <p><code>gosimple</code> analyzes your code to see if it can be written in a simpler manner. For example:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6ab825;font-weight:bold">package</span> main
 
 <span style="color:#6ab825;font-weight:bold">import</span> <span style="color:#ed9d13">&#34;fmt&#34;</span>
 
-<span style="color:#6ab825;font-weight:bold">func</span> bad(b <span style="color:#6ab825;font-weight:bold">bool</span>) {
+<span style="color:#6ab825;font-weight:bold">func</span> <span style="color:#447fcf">bad</span>(b <span style="color:#6ab825;font-weight:bold">bool</span>) {
 	<span style="color:#6ab825;font-weight:bold">if</span> b == <span style="color:#6ab825;font-weight:bold">true</span> {
-		fmt.Println(<span style="color:#ed9d13">&#34;true&#34;</span>)
+		fmt.<span style="color:#447fcf">Println</span>(<span style="color:#ed9d13">&#34;true&#34;</span>)
 	} <span style="color:#6ab825;font-weight:bold">else</span> {
-		fmt.Println(<span style="color:#ed9d13">&#34;false&#34;</span>)
+		fmt.<span style="color:#447fcf">Println</span>(<span style="color:#ed9d13">&#34;false&#34;</span>)
 	}
 }
 
-<span style="color:#6ab825;font-weight:bold">func</span> main() {
-	bad(<span style="color:#6ab825;font-weight:bold">true</span>)
-}</code></pre></div>
-<p>When running <code>gosimple main.go</code> you will see this output:</p>
-
+<span style="color:#6ab825;font-weight:bold">func</span> <span style="color:#447fcf">main</span>() {
+	<span style="color:#447fcf">bad</span>(<span style="color:#6ab825;font-weight:bold">true</span>)
+}
+</code></pre></div><p>When running <code>gosimple main.go</code> you will see this output:</p>
 <p><code>main.go:6:5: should omit comparison to bool constant, can be simplified to b (S1002)</code></p>
-
 <h4 id="static-checks">Static Checks</h4>
-
 <p><code>staticcheck</code> is a great lint because it can find subtle issues in your Go code. For example:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6ab825;font-weight:bold">package</span> main
 
@@ -233,22 +204,18 @@ examples are contrived, they will compile and pass <code>go vet</code>.</p>
 	<span style="color:#ed9d13">&#34;strings&#34;</span>
 )
 
-<span style="color:#6ab825;font-weight:bold">func</span> main() {
-	s := strings.Replace(<span style="color:#ed9d13">&#34;bad-bad-bad&#34;</span>, <span style="color:#ed9d13">&#34;-&#34;</span>, <span style="color:#ed9d13">&#34;&amp;&#34;</span>, <span style="color:#3677a9">0</span>)
-	fmt.Println(s)
-}</code></pre></div>
-<p>When running <code>staticcheck main.go</code> you will see this output:</p>
-
+<span style="color:#6ab825;font-weight:bold">func</span> <span style="color:#447fcf">main</span>() {
+	s := strings.<span style="color:#447fcf">Replace</span>(<span style="color:#ed9d13">&#34;bad-bad-bad&#34;</span>, <span style="color:#ed9d13">&#34;-&#34;</span>, <span style="color:#ed9d13">&#34;&amp;&#34;</span>, <span style="color:#3677a9">0</span>)
+	fmt.<span style="color:#447fcf">Println</span>(s)
+}
+</code></pre></div><p>When running <code>staticcheck main.go</code> you will see this output:</p>
 <p><code>main.go:9:48: calling strings.Replace with n == 0 will return no results, did you mean -1? (SA1018)</code></p>
-
 <p>There are many items that <code>staticcheck</code> can catch and they are listed in the
 <a href="https://github.com/dominikh/go-tools/tree/master/cmd/staticcheck">README</a>. During a recent
 refactor of some of my code I had silently omitted an error check in a function. There
 were other checks throughout the function but if it had failed in the step without a check, the error variable
 would have had the wrong value. This would have been a nightmare to debug.</p>
-
 <h4 id="unused">Unused</h4>
-
 <p>When refactoring it is often easy to forget about certain bits of code. There may be functions or
 variables that are defined but not used anywhere. This is often referred to as dead code. For example:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6ab825;font-weight:bold">package</span> main
@@ -257,23 +224,20 @@ variables that are defined but not used anywhere. This is often referred to as d
 
 <span style="color:#6ab825;font-weight:bold">const</span> a = <span style="color:#3677a9">5</span>
 
-<span style="color:#6ab825;font-weight:bold">func</span> main() {
-	fmt.Println(<span style="color:#ed9d13">&#34;hello&#34;</span>)
-}</code></pre></div>
-<p>When running <code>unused main.go</code> you will see this output:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">main.go:5:7: const a is unused (U1000)</code></pre></div>
-<h4 id="git-hooks">Git Hooks</h4>
-
+<span style="color:#6ab825;font-weight:bold">func</span> <span style="color:#447fcf">main</span>() {
+	fmt.<span style="color:#447fcf">Println</span>(<span style="color:#ed9d13">&#34;hello&#34;</span>)
+}
+</code></pre></div><p>When running <code>unused main.go</code> you will see this output:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">main.go:5:7: const a is unused (U1000)
+</code></pre></div><h4 id="git-hooks">Git Hooks</h4>
 <p>I found that these tools were important in my workflow and decided to add them as a pre-commit hook
 in git. For those unfamiliar with git hooks, the documentation for them can be found <a href="https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks">here</a>.
 They essentially provide a way to customize your git workflow and enforce things such as commit
 message format or linting.</p>
-
 <p>In this case I want to run the tools above before a commit is made. Git&rsquo;s pre-commit hook is run
 before a new commit is made in the current branch as implied by the name. It adds a little extra time to the process but
 it is nice to have in the sense that it catches problems and allows you to adjust the working tree. This
 ensures that all commits are up to your standard.</p>
-
 <p>Here is the pre-commit hook I use for all my go projects:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#cd2828;font-weight:bold">#!/bin/bash
 </span><span style="color:#cd2828;font-weight:bold"></span>
@@ -294,13 +258,11 @@ unused <span style="color:#6ab825;font-weight:bold">$(</span>glide nv<span style
 check_exit <span style="color:#ed9d13">&#34;unused&#34;</span>
 
 staticcheck <span style="color:#6ab825;font-weight:bold">$(</span>glide nv<span style="color:#6ab825;font-weight:bold">)</span>
-check_exit <span style="color:#ed9d13">&#34;staticcheck&#34;</span></code></pre></div>
-<p>The <code>glide nv</code> command lists all non-dependency code used in a project. It&rsquo;s akin to <code>./...</code> in the sense
+check_exit <span style="color:#ed9d13">&#34;staticcheck&#34;</span>
+</code></pre></div><p>The <code>glide nv</code> command lists all non-dependency code used in a project. It&rsquo;s akin to <code>./...</code> in the sense
 that is runs over all packages. Glide is the dependency manager I use for my projects and the site
 can be found <a href="https://glide.sh">here</a> for those that are interested.</p>
-
 <h4 id="summary">Summary</h4>
-
 <p>By adding static analysis tools to your Go code, you can help prevent common coding mistakes and
 make your development environment better in the process. Having this be automatic is also a
 catalyst for more iterative and effective coding.</p>
@@ -329,7 +291,7 @@ catalyst for more iterative and effective coding.</p>
   <div class="social-links-footer">
 
   
-  <a href="mailto:garrettsquire@gmail.com"><div class="social-link">Email</div></a>
+  <a href="mailto:mail@garrettsquire.com"><div class="social-link">Email</div></a>
   
 
   

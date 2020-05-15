@@ -7,7 +7,7 @@
 <meta name="description" content="" />
 <meta name="keywords" content="" />
 <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
-<meta name="generator" content="Hugo 0.42.1" />
+<meta name="generator" content="Hugo 0.70.0" />
 
 <link rel="canonical" href="https://gsquire.github.io/static/post/rest-in-rust/">
 <base href="https://gsquire.github.io/static/" />
@@ -16,22 +16,8 @@
 One of the coolest things about hyper is that its server can be started with anything that implements the Handler trait." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://gsquire.github.io/static/post/rest-in-rust/" />
-
-
-
-<meta property="article:published_time" content="2016-06-14T14:56:18-07:00"/>
-
-<meta property="article:modified_time" content="2016-06-14T14:56:18-07:00"/>
-
-
-
-
-
-
-
-
-
-
+<meta property="article:published_time" content="2016-06-14T14:56:18-07:00" />
+<meta property="article:modified_time" content="2016-06-14T14:56:18-07:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="REST in Rust"/>
@@ -39,20 +25,16 @@ One of the coolest things about hyper is that its server can be started with any
 One of the coolest things about hyper is that its server can be started with anything that implements the Handler trait."/>
 
 
-
 <meta itemprop="name" content="REST in Rust">
 <meta itemprop="description" content="Writing a simple REST app in Rust If you have ever worked with HTTP in Rust, you have probably referred to the hyper crate. Hyper provides a safe abstraction over HTTP and offers both a client and server type. It is also the foundation for frameworks such as Iron and Nickel.
 One of the coolest things about hyper is that its server can be started with anything that implements the Handler trait.">
-
-
 <meta itemprop="datePublished" content="2016-06-14T14:56:18-07:00" />
 <meta itemprop="dateModified" content="2016-06-14T14:56:18-07:00" />
-<meta itemprop="wordCount" content="442">
+<meta itemprop="wordCount" content="441">
 
 
 
 <meta itemprop="keywords" content="" />
-
 
 <link rel="stylesheet" href="css/layout.css" />
 <style type="text/css">
@@ -154,7 +136,7 @@ th {
 <div class="social-links-header">
 
   
-  <a href="mailto:garrettsquire@gmail.com"><div class="social-link">email</div></a>
+  <a href="mailto:mail@garrettsquire.com"><div class="social-link">email</div></a>
   
 
   
@@ -177,40 +159,28 @@ th {
 
 <article class="post">
     <h1 class="title"> REST in Rust </h1>
-    <div class="content"> 
-
-<h1 id="writing-a-simple-rest-app-in-rust">Writing a simple REST app in Rust</h1>
-
+    <div class="content"> <h1 id="writing-a-simple-rest-app-in-rust">Writing a simple REST app in Rust</h1>
 <p>If you have ever worked with HTTP in Rust, you have probably referred to the
 <a href="hyper.rs">hyper</a> crate. Hyper provides a safe abstraction over HTTP and offers both
 a client and server type. It is also the foundation for frameworks such as <a href="https://github.com/iron/iron">Iron</a>
 and <a href="https://github.com/nickel-org/nickel.rs">Nickel</a>.</p>
-
 <p>One of the coolest things about hyper is that its server can be started with anything that
 implements the <a href="http://hyper.rs/hyper/v0.9.8/hyper/server/trait.Handler.html"><code>Handler</code></a> trait.
 There is one required method called <code>handle</code> and it denotes how the type which implements it
 should respond to an incoming connection.</p>
-
 <p><code>handle</code> has the following function signature:</p>
-
 <pre><code>fn handle&lt;'a, 'k&gt;(&amp;'a self, Request&lt;'a, 'k&gt;, Response&lt;'a, Fresh&gt;)
-</code></pre>
-
-<p>As you can see it gives us access to a <code>Request</code> and <code>Response</code> type which are aptly named. If you take a look
+</code></pre><p>As you can see it gives us access to a <code>Request</code> and <code>Response</code> type which are aptly named. If you take a look
 at the documentation for these, you will find that they provide the basis to check
 for HTTP headers or set the body of an HTTP response.</p>
-
 <h2 id="regexset"><code>RegexSet</code></h2>
-
 <p>The regex crate recently added a type called a <a href="https://doc.rust-lang.org/regex/regex/struct.RegexSet.html"><code>RegexSet</code></a>.
 This is a powerful construct in that it can match multiple patterns that you provide in a single
 scan. Using this idea, I thought it would be fun to write a router with a <code>RegexSet</code> matching
 requests under the hood.</p>
-
 <p>The result of this is <a href="https://github.com/gsquire/reroute">reroute</a>. This crate provides a <code>Router</code>
 type that can match patterns you provide and call corresponding functions accordingly. The functions have access
 to the <code>Request</code> and <code>Response</code> along with a type that captures matches in the URI.</p>
-
 <h2 id="a-simple-example">A simple example</h2>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#6ab825;font-weight:bold">extern</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">crate</span><span style="color:#666"> </span>hyper;<span style="color:#666">
 </span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">extern</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">crate</span><span style="color:#666"> </span>reroute;<span style="color:#666">
@@ -219,7 +189,7 @@ to the <code>Request</code> and <code>Response</code> along with a type that cap
 </span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">use</span><span style="color:#666"> </span>hyper::server::{Request,<span style="color:#666"> </span>Response};<span style="color:#666">
 </span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">use</span><span style="color:#666"> </span>reroute::{Captures,<span style="color:#666"> </span>Router};<span style="color:#666">
 </span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">fn</span> <span style="color:#447fcf">digit_handler</span>(_: <span style="color:#447fcf">Request</span>,<span style="color:#666"> </span>res: <span style="color:#447fcf">Response</span>,<span style="color:#666"> </span>c: <span style="color:#447fcf">Captures</span>)<span style="color:#666"> </span>{<span style="color:#666">
+</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">fn</span> <span style="color:#447fcf">digit_handler</span>(_: <span style="color:#447fcf;text-decoration:underline">Request</span>,<span style="color:#666"> </span>res: <span style="color:#447fcf;text-decoration:underline">Response</span>,<span style="color:#666"> </span>c: <span style="color:#447fcf;text-decoration:underline">Captures</span>)<span style="color:#666"> </span>{<span style="color:#666">
 </span><span style="color:#666">    </span>println!(<span style="color:#ed9d13">&#34;captures: {:?}&#34;</span>,<span style="color:#666"> </span>c);<span style="color:#666">
 </span><span style="color:#666">    </span>res.send(<span style="color:#ed9d13">b&#34;It works for digits!&#34;</span>).unwrap();<span style="color:#666">
 </span><span style="color:#666"></span>}<span style="color:#666">
@@ -236,19 +206,15 @@ to the <code>Request</code> and <code>Response</code> along with a type that cap
 </span><span style="color:#999;font-style:italic"></span><span style="color:#666">    </span><span style="color:#999;font-style:italic">// implements the Handle trait.
 </span><span style="color:#999;font-style:italic"></span><span style="color:#666">    </span>Server::http(<span style="color:#ed9d13">&#34;127.0.0.1:3000&#34;</span>).unwrap().handle(router).unwrap();<span style="color:#666">
 </span><span style="color:#666"></span>}<span style="color:#666">
-</span><span style="color:#666"></span></code></pre></div>
-<p>Since <code>Router</code> implements the <code>Handler</code> trait, hyper&rsquo;s <code>Server</code> can use it to respond
+</span></code></pre></div><p>Since <code>Router</code> implements the <code>Handler</code> trait, hyper&rsquo;s <code>Server</code> can use it to respond
 to connections. With this in mind, you can write a REST app in a few lines and extend this
 functionality to suit your own needs. The <code>Captures</code> type gives you matches in your URI that the regex
 engine finds. So in the example above, if I do a GET against the route &ldquo;/123&rdquo;, <code>c</code> will be
 <code>Some([&quot;/123&quot;, &quot;123&quot;])</code>. This is a <code>Vector</code> of the matches returned from the <code>RegexSet</code>. You
 can use any pattern with grouping that you like and the router will collect them for you. Of course
 you don&rsquo;t need to provide groups and can just add routes like &ldquo;/v1/some/endpoint&rdquo; as well.</p>
-
 <p>Reroute surely isn&rsquo;t as complete as Iron but its only goal is to route requests in an app.</p>
-
 <h2 id="questions-or-thoughts">Questions or thoughts?</h2>
-
 <p>Feel free to contact me through the email on my <a href="https://github.com/gsquire">GitHub</a> profile.</p>
  </div>
     <footer class="post-footer">
@@ -275,7 +241,7 @@ you don&rsquo;t need to provide groups and can just add routes like &ldquo;/v1/s
   <div class="social-links-footer">
 
   
-  <a href="mailto:garrettsquire@gmail.com"><div class="social-link">Email</div></a>
+  <a href="mailto:mail@garrettsquire.com"><div class="social-link">Email</div></a>
   
 
   
