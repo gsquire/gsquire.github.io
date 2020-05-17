@@ -6,10 +6,19 @@
     <description>Recent content in Posts on Garrett&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 24 Jun 2018 10:44:31 -0700</lastBuildDate>
+    <lastBuildDate>Sun, 17 May 2020 10:57:01 -0700</lastBuildDate>
     
 	<atom:link href="https://gsquire.github.io/static/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>A Brief Exploration of Zig</title>
+      <link>https://gsquire.github.io/static/post/a-brief-exploration-of-zig/</link>
+      <pubDate>Sun, 17 May 2020 10:57:01 -0700</pubDate>
+      
+      <guid>https://gsquire.github.io/static/post/a-brief-exploration-of-zig/</guid>
+      <description>Why Zig? Zig is an intriguing new language that aims to fill a niche in the low-level development world. It offers a syntax that looks like a derivative of C along with some exciting features that make it an appealing modern alternative.</description>
+    </item>
     
     <item>
       <title>A Rusty Go at Channels</title>
@@ -17,7 +26,7 @@
       <pubDate>Sun, 24 Jun 2018 10:44:31 -0700</pubDate>
       
       <guid>https://gsquire.github.io/static/post/a-rusty-go-at-channels/</guid>
-      <description>Channels Channels are a useful concurrency primitive that enable separate processes to safely communicate without the need for explicit synchronization. The term processes is used here to loosely describe independent threads of execution within a program. This can be an OS level thread or a runtime level thread. Channels can be seen as a pipe to connect these processes and allow them to share memory with one another. For example a program could spawn any number of processes along with a channel to transmit results that it gathers.</description>
+      <description>Channels Channels are a useful concurrency primitive that enable separate processes to safely communicate without the need for explicit synchronization. The term processes is used here to loosely describe independent threads of execution within a program.</description>
     </item>
     
     <item>
@@ -26,9 +35,7 @@
       <pubDate>Sun, 21 Jan 2018 19:23:57 -0800</pubDate>
       
       <guid>https://gsquire.github.io/static/post/rust-redis-modules/</guid>
-      <description>Redis Modules with Rust With newer versions of Redis, the modules API lets users extend Redis&amp;rsquo; already powerful functionality. To quote the Redis website:
- Redis modules make possible to extend Redis functionality using external modules, implementing new Redis commands at a speed and with features similar to what can be done inside the core itself.
- The module API is defined in a single header file with the main goal of writing them in C but also allowing for any language with C bindings.</description>
+      <description>Redis Modules with Rust With newer versions of Redis, the modules API lets users extend Redis&amp;rsquo; already powerful functionality. To quote the Redis website:</description>
     </item>
     
     <item>
@@ -37,7 +44,7 @@
       <pubDate>Wed, 10 Jan 2018 19:05:55 -0800</pubDate>
       
       <guid>https://gsquire.github.io/static/post/rust-in-2018/</guid>
-      <description>Rust in 2018 This short post is a reflection on Rust in 2017 and some ideas I would love to see in 2018 written in the spirit of this blog post. I will keep things brief and try not to repeat what others have already shared. There have been many wonderful ideas that makes me even more enthusiastic about Rust so I hope that I can add to the excitement with a few of my own.</description>
+      <description>Rust in 2018 This short post is a reflection on Rust in 2017 and some ideas I would love to see in 2018 written in the spirit of this blog post.</description>
     </item>
     
     <item>
@@ -46,8 +53,7 @@
       <pubDate>Mon, 06 Mar 2017 14:30:42 -0800</pubDate>
       
       <guid>https://gsquire.github.io/static/post/cleaner-go/</guid>
-      <description>Large code bases can become increasingly complex to manage as you add more code while also refactoring what is there already. Even with diligent code reviews, it is easy to gloss over common programming mistakes. Sometimes code can be written in a simpler way. Or perhaps a recent refactor left a few functions in that are no longer used.
-Luckily the go tool includes a sub-command that will examine Go source and report suspicious lines based on heuristics that the compiler will not catch.</description>
+      <description>Large code bases can become increasingly complex to manage as you add more code while also refactoring what is there already.</description>
     </item>
     
     <item>
@@ -56,8 +62,7 @@ Luckily the go tool includes a sub-command that will examine Go source and repor
       <pubDate>Tue, 14 Jun 2016 14:56:18 -0700</pubDate>
       
       <guid>https://gsquire.github.io/static/post/rest-in-rust/</guid>
-      <description>Writing a simple REST app in Rust If you have ever worked with HTTP in Rust, you have probably referred to the hyper crate. Hyper provides a safe abstraction over HTTP and offers both a client and server type. It is also the foundation for frameworks such as Iron and Nickel.
-One of the coolest things about hyper is that its server can be started with anything that implements the Handler trait.</description>
+      <description>Writing a simple REST app in Rust If you have ever worked with HTTP in Rust, you have probably referred to the hyper crate.</description>
     </item>
     
   </channel>

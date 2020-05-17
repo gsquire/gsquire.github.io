@@ -1,162 +1,50 @@
 <!DOCTYPE html>
-<html lang="en-us">
-
+<html>
 <head>
-<meta charset="utf-8" />
-<meta name="author" content="" />
-<meta name="description" content="" />
-<meta name="keywords" content="" />
-<meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
-<meta name="generator" content="Hugo 0.70.0" />
-
-<link rel="canonical" href="https://gsquire.github.io/static/post/a-rusty-go-at-channels/">
-<base href="https://gsquire.github.io/static/" />
-<meta property="og:title" content="A Rusty Go at Channels" />
-<meta property="og:description" content="Channels Channels are a useful concurrency primitive that enable separate processes to safely communicate without the need for explicit synchronization. The term processes is used here to loosely describe independent threads of execution within a program. This can be an OS level thread or a runtime level thread. Channels can be seen as a pipe to connect these processes and allow them to share memory with one another. For example a program could spawn any number of processes along with a channel to transmit results that it gathers." />
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>A Rusty Go at Channels - Garrett&#39;s Blog</title><meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta property="og:title" content="A Rusty Go at Channels" />
+<meta property="og:description" content="Channels Channels are a useful concurrency primitive that enable separate processes to safely communicate without the need for explicit synchronization. The term processes is used here to loosely describe independent threads of execution within a program." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://gsquire.github.io/static/post/a-rusty-go-at-channels/" />
 <meta property="article:published_time" content="2018-06-24T10:44:31-07:00" />
 <meta property="article:modified_time" content="2018-06-24T10:44:31-07:00" />
-
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="A Rusty Go at Channels"/>
-<meta name="twitter:description" content="Channels Channels are a useful concurrency primitive that enable separate processes to safely communicate without the need for explicit synchronization. The term processes is used here to loosely describe independent threads of execution within a program. This can be an OS level thread or a runtime level thread. Channels can be seen as a pipe to connect these processes and allow them to share memory with one another. For example a program could spawn any number of processes along with a channel to transmit results that it gathers."/>
+<meta name="twitter:description" content="Channels Channels are a useful concurrency primitive that enable separate processes to safely communicate without the need for explicit synchronization. The term processes is used here to loosely describe independent threads of execution within a program."/>
+<link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,300italic,400italic|Raleway:200,300" rel="stylesheet">
 
+	<link rel="stylesheet" type="text/css" media="screen" href="https://gsquire.github.io/static/css/normalize.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://gsquire.github.io/static/css/main.css" /><link rel="stylesheet" type="text/css" href="https://gsquire.github.io/static/css/dark.css" media="(prefers-color-scheme: dark)" />
 
-<meta itemprop="name" content="A Rusty Go at Channels">
-<meta itemprop="description" content="Channels Channels are a useful concurrency primitive that enable separate processes to safely communicate without the need for explicit synchronization. The term processes is used here to loosely describe independent threads of execution within a program. This can be an OS level thread or a runtime level thread. Channels can be seen as a pipe to connect these processes and allow them to share memory with one another. For example a program could spawn any number of processes along with a channel to transmit results that it gathers.">
-<meta itemprop="datePublished" content="2018-06-24T10:44:31-07:00" />
-<meta itemprop="dateModified" content="2018-06-24T10:44:31-07:00" />
-<meta itemprop="wordCount" content="1561">
-
-
-
-<meta itemprop="keywords" content="" />
-
-<link rel="stylesheet" href="css/layout.css" />
-<style type="text/css">
-body {
-  background-color: #101010;
-  color: #c0c0c0;
-}
-
-a { color: #c0c0c0; }
-
-pre {
-  background: #1d1f21;
-  border: 1px solid #c0c0c0;
-  border-radius: 5px;
-}
-
-code {
-  background: #1d1f21;
-}
-
-blockquote {
-  background: #1d1f21;
-  border-left: 3px solid #c0c0c0;
-}
-
-table {
-  margin: 1em auto;
-  border-collapse: collapse;
-}
-
-table, th, td {
-  border: 1px solid #c0c0c0;
-}
-
-th {
-  background: #c0c0c0;
-  color: #101010;
-}
-
-.siteTitle a { color: #5f8c96; }
-
-.post .content h1{ color: #5f8c96; }
-.post .content h2{ color: #5f8c96; }
-.post .content h3{ color: #5f8c96; }
-.post .content h4{ color: #5f8c96; }
-.post .content h5{ color: #5f8c96; }
-.post .content h6{ color: #5f8c96; }
-.post .content a:hover { color: #5f8c96; }
-.social-link:hover { color: #5f8c96; }
-.nav-item-title:hover { color: #5f8c96; }
-.tag a:hover { color: #5f8c96; }
-.copyright { color: #404040 }
-.poweredby { color: #404040 }
-.poweredby a { color: #404040; }
-.post-preview .title a{ color: #5f8c96; }
-.content-item a:hover{
-  text-decoration: underline;
-  color: #5f8c96;
-}
-.post-list .title { color: #5f8c96; }
-.rmore { color: #5f8c96; }
-.terms .term a:hover {
-  text-decoration: underline;
-  color: #5f8c96;
-}
-
-</style>
-
-
-
-<title>
-
-
-     A Rusty Go at Channels 
-
-</title>
-
+	<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+	<script src="https://gsquire.github.io/static/js/main.js"></script>
 </head>
 
-
 <body>
-<div class="main">
-<header>
+	<div class="container wrapper post">
+		<div class="header">
+	<h1 class="site-title"><a href="https://gsquire.github.io/static/">Garrett&#39;s Blog</a></h1>
+	<div class="site-description"><h2>A place for my thoughts on software development</h2><nav class="nav social">
+			<ul class="flat"><a href="https://github.com/gsquire" title="GitHub"><i data-feather="github"></i></a><a href="https://twitter.com/garrettsquire" title="Twitter"><i data-feather="twitter"></i></a><a href="mailto:mail@garrettsquire.com" title="Email"><i data-feather="mail"></i></a></ul>
+		</nav>
+	</div>
 
-<div class="header-bar">
-
-  <nav>
-    <div class="siteTitle">
-      <a href="https://gsquire.github.io/static/">Garrett&#39;s Blog</a>
-    </div> 
-
-    
-    
-
-  </nav>
-</div>
-
-  
-<div class="social-links-header">
-
-  
-  <a href="mailto:mail@garrettsquire.com"><div class="social-link">email</div></a>
-  
-
-  
-  <a href="https://github.com/gsquire" target="_blank"><div class="social-link">gh</div></a>
-  
-
-  
-
-  
-  <a href="https://twitter.com/garrettsquire" target="_blank"><div class="social-link">twtr</div></a>
-  
-
-  
-
+	<nav class="nav">
+		<ul class="flat">
+			
+		</ul>
+	</nav>
 </div>
 
 
-</header>
+		<div class="post-header">
+			<h1 class="title">A Rusty Go at Channels</h1>
+			<div class="meta">Posted at &mdash; Jun 24, 2018</div>
+		</div>
 
-
-<article class="post">
-    <h1 class="title"> A Rusty Go at Channels </h1>
-    <div class="content"> <h2 id="channels">Channels</h2>
+		<div class="markdown">
+			<h2 id="channels">Channels</h2>
 <p>Channels are a useful concurrency primitive that enable separate processes to safely communicate
 without the need for explicit synchronization. The term processes is used here to loosely describe
 independent threads of execution within a program. This can be an OS level thread or a runtime level
@@ -173,23 +61,23 @@ arguments which gives the program another level of type safety. In order to crea
 use the <a href="https://golang.org/pkg/builtin/#make">make</a> function along with an optional capacity
 argument. This capacity dictates whether or not the channel is buffered which has important
 implications that I will cover later on. Below is an example of making both types of channels.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#999;font-style:italic">// Declare a non-buffered channel of integers.
-</span><span style="color:#999;font-style:italic"></span>n := <span style="color:#24909d">make</span>(<span style="color:#6ab825;font-weight:bold">chan</span> <span style="color:#6ab825;font-weight:bold">int</span>)
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#228b22">// Declare a non-buffered channel of integers.
+</span><span style="color:#228b22"></span>n := <span style="color:#658b00">make</span>(<span style="color:#8b008b;font-weight:bold">chan</span> <span style="color:#00688b;font-weight:bold">int</span>)
 
-<span style="color:#999;font-style:italic">// Declare a buffered channel of integers.
-</span><span style="color:#999;font-style:italic">// This means that the channel can only contain one value at a time.
-</span><span style="color:#999;font-style:italic"></span>b := <span style="color:#24909d">make</span>(<span style="color:#6ab825;font-weight:bold">chan</span> <span style="color:#6ab825;font-weight:bold">int</span>, <span style="color:#3677a9">1</span>)
+<span style="color:#228b22">// Declare a buffered channel of integers.
+</span><span style="color:#228b22">// This means that the channel can only contain one value at a time.
+</span><span style="color:#228b22"></span>b := <span style="color:#658b00">make</span>(<span style="color:#8b008b;font-weight:bold">chan</span> <span style="color:#00688b;font-weight:bold">int</span>, <span style="color:#b452cd">1</span>)
 </code></pre></div><p>Sending and receving values with a channel is done with the <code>&lt;-</code> operator which reads like a
 sequential execution.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">n := <span style="color:#24909d">make</span>(<span style="color:#6ab825;font-weight:bold">chan</span> <span style="color:#6ab825;font-weight:bold">int</span>)
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">n := <span style="color:#658b00">make</span>(<span style="color:#8b008b;font-weight:bold">chan</span> <span style="color:#00688b;font-weight:bold">int</span>)
 
-<span style="color:#999;font-style:italic">// Send a value on the channel in a separate goroutine.
-</span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">go</span> <span style="color:#6ab825;font-weight:bold">func</span>() {
-    n &lt;- <span style="color:#3677a9">1</span>
+<span style="color:#228b22">// Send a value on the channel in a separate goroutine.
+</span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">go</span> <span style="color:#8b008b;font-weight:bold">func</span>() {
+    n &lt;- <span style="color:#b452cd">1</span>
 }()
 
-<span style="color:#999;font-style:italic">// The receive operation uses `&lt;-` as well but is flipped to the front instead.
-</span><span style="color:#999;font-style:italic"></span>fmt.<span style="color:#447fcf">Printf</span>(<span style="color:#ed9d13">&#34;i received %d\n&#34;</span>, &lt;-n)
+<span style="color:#228b22">// The receive operation uses `&lt;-` as well but is flipped to the front instead.
+</span><span style="color:#228b22"></span>fmt.<span style="color:#008b45">Printf</span>(<span style="color:#cd5555">&#34;i received %d\n&#34;</span>, &lt;-n)
 </code></pre></div><p>Go&rsquo;s channels enable many useful features when dealing with concurrent programs. Go offers
 concurrency in the form of &ldquo;goroutines&rdquo; which are lightweight runtime level threads that are mapped
 onto OS level threads. These goroutines have their own stack and are very cheap enabling the
@@ -202,37 +90,37 @@ designing a program as it can cause deadlocks if used incorrectly.</p>
 <p>Go also allows the use of the <code>range</code> keyword to iterate over a channel. The only way to stop this
 iteration is by using the <code>close</code> keyword to alert the receiver that there are no more values left.
 This is most likely the only time you would need to use the <code>close</code> keyword.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#999;font-style:italic">// Make a non-buffered channel to pass integers with.
-</span><span style="color:#999;font-style:italic"></span>c := <span style="color:#24909d">make</span>(<span style="color:#6ab825;font-weight:bold">chan</span> <span style="color:#6ab825;font-weight:bold">int</span>)
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#228b22">// Make a non-buffered channel to pass integers with.
+</span><span style="color:#228b22"></span>c := <span style="color:#658b00">make</span>(<span style="color:#8b008b;font-weight:bold">chan</span> <span style="color:#00688b;font-weight:bold">int</span>)
 
-<span style="color:#999;font-style:italic">// Spawn off a goroutine that sends values into this channel.
-</span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">go</span> <span style="color:#6ab825;font-weight:bold">func</span>() {
-    <span style="color:#6ab825;font-weight:bold">for</span> i := <span style="color:#3677a9">0</span>; i &lt; <span style="color:#3677a9">10</span>; i++ {
-        <span style="color:#999;font-style:italic">// Remember, this will block until the main goroutine can receive its value.
-</span><span style="color:#999;font-style:italic"></span>        c &lt;- i
+<span style="color:#228b22">// Spawn off a goroutine that sends values into this channel.
+</span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">go</span> <span style="color:#8b008b;font-weight:bold">func</span>() {
+    <span style="color:#8b008b;font-weight:bold">for</span> i := <span style="color:#b452cd">0</span>; i &lt; <span style="color:#b452cd">10</span>; i++ {
+        <span style="color:#228b22">// Remember, this will block until the main goroutine can receive its value.
+</span><span style="color:#228b22"></span>        c &lt;- i
     }
-    <span style="color:#999;font-style:italic">// Alert the main goroutine that we are done sending values.
-</span><span style="color:#999;font-style:italic"></span>    <span style="color:#24909d">close</span>(c)
+    <span style="color:#228b22">// Alert the main goroutine that we are done sending values.
+</span><span style="color:#228b22"></span>    <span style="color:#658b00">close</span>(c)
 }()
 
-<span style="color:#999;font-style:italic">// This will iterate until the sending goroutine calls `close`.
-</span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">for</span> i := <span style="color:#6ab825;font-weight:bold">range</span> c {
-    fmt.<span style="color:#447fcf">Println</span>(i)
+<span style="color:#228b22">// This will iterate until the sending goroutine calls `close`.
+</span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">for</span> i := <span style="color:#8b008b;font-weight:bold">range</span> c {
+    fmt.<span style="color:#008b45">Println</span>(i)
 }
 </code></pre></div><p>Another useful feature of Go is the <code>select</code> statement. The <code>select</code> statement allows you to perform
 a blocking operation on a set of channels or a default operation if none are ready. If more than one
 operation is ready then one is chosen at random. Below is an example of using <code>select</code> to manage
 multiple channel operations along with a default one.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6ab825;font-weight:bold">select</span> {
-    <span style="color:#999;font-style:italic">// You can see if a send is ready to fire.
-</span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">case</span> c &lt;- i:
-    <span style="color:#999;font-style:italic">// See if we should leave this by receiving a value from this channel.
-</span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">case</span> j := &lt;- quit:
-        fmt.<span style="color:#447fcf">Printf</span>(<span style="color:#ed9d13">&#34;got %s, leaving...&#34;</span>, j)
-    <span style="color:#999;font-style:italic">// Just print waiting if either of the operations can&#39;t proceed. This is just an example
-</span><span style="color:#999;font-style:italic"></span>    <span style="color:#999;font-style:italic">// and may not be useful in actual code.
-</span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">default</span>:
-        fmt.<span style="color:#447fcf">Println</span>(<span style="color:#ed9d13">&#34;waiting...&#34;</span>)
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8b008b;font-weight:bold">select</span> {
+    <span style="color:#228b22">// You can see if a send is ready to fire.
+</span><span style="color:#228b22"></span>    <span style="color:#8b008b;font-weight:bold">case</span> c &lt;- i:
+    <span style="color:#228b22">// See if we should leave this by receiving a value from this channel.
+</span><span style="color:#228b22"></span>    <span style="color:#8b008b;font-weight:bold">case</span> j := &lt;- quit:
+        fmt.<span style="color:#008b45">Printf</span>(<span style="color:#cd5555">&#34;got %s, leaving...&#34;</span>, j)
+    <span style="color:#228b22">// Just print waiting if either of the operations can&#39;t proceed. This is just an example
+</span><span style="color:#228b22"></span>    <span style="color:#228b22">// and may not be useful in actual code.
+</span><span style="color:#228b22"></span>    <span style="color:#8b008b;font-weight:bold">default</span>:
+        fmt.<span style="color:#008b45">Println</span>(<span style="color:#cd5555">&#34;waiting...&#34;</span>)
 }
 </code></pre></div><p>This is by no means an exhaustive list of things you can do with a channel in Go but it highlights
 most of the use cases.</p>
@@ -242,22 +130,22 @@ in the standard library. These are MPSC or &ldquo;multiple producer, single cons
 be shared across threads. Unlike Go, Rust does not offer runtime threading and instead allows you
 to spawn OS level threads through its standard library.</p>
 <p>Below is an example of configuring a non-buffered channel in Rust.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#999;font-style:italic">// The standard library imports.
-</span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">use</span><span style="color:#666"> </span>std::sync::mpsc::channel;<span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">use</span><span style="color:#666"> </span>std::thread::spawn;<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#999;font-style:italic">// Create a channel pair. They are distinct types unlike in Go.
-</span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">let</span><span style="color:#666"> </span>(tx,<span style="color:#666"> </span>rx)<span style="color:#666"> </span>=<span style="color:#666"> </span>channel();<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#999;font-style:italic">// Spawn the thread and move ownership of the sending half into the new thread. This can also be
-</span><span style="color:#999;font-style:italic">// cloned if needed since there can be multiple producers.
-</span><span style="color:#999;font-style:italic"></span>spawn(<span style="color:#6ab825;font-weight:bold">move</span><span style="color:#666"> </span>||<span style="color:#666"> </span>{<span style="color:#666">
-</span><span style="color:#666">    </span><span style="color:#999;font-style:italic">// Send a value and ignore the error by calling `unwrap`.
-</span><span style="color:#999;font-style:italic"></span><span style="color:#666">    </span>tx.send(<span style="color:#3677a9">1</span>).unwrap();<span style="color:#666">
-</span><span style="color:#666"></span>});<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#999;font-style:italic">// Receive the value and ignore the error by calling `unwrap`.
-</span><span style="color:#999;font-style:italic"></span>println!(<span style="color:#ed9d13">&#34;received value {:?}&#34;</span>,<span style="color:#666"> </span>rx.recv().unwrap());<span style="color:#666">
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#228b22">// The standard library imports.
+</span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">use</span><span style="color:#bbb"> </span>std::sync::mpsc::channel;<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">use</span><span style="color:#bbb"> </span>std::thread::spawn;<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#228b22">// Create a channel pair. They are distinct types unlike in Go.
+</span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">let</span><span style="color:#bbb"> </span>(tx,<span style="color:#bbb"> </span>rx)<span style="color:#bbb"> </span>=<span style="color:#bbb"> </span>channel();<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#228b22">// Spawn the thread and move ownership of the sending half into the new thread. This can also be
+</span><span style="color:#228b22">// cloned if needed since there can be multiple producers.
+</span><span style="color:#228b22"></span>spawn(<span style="color:#8b008b;font-weight:bold">move</span><span style="color:#bbb"> </span>||<span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#228b22">// Send a value and ignore the error by calling `unwrap`.
+</span><span style="color:#228b22"></span><span style="color:#bbb">    </span>tx.send(<span style="color:#b452cd">1</span>).unwrap();<span style="color:#bbb">
+</span><span style="color:#bbb"></span>});<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#228b22">// Receive the value and ignore the error by calling `unwrap`.
+</span><span style="color:#228b22"></span>println!(<span style="color:#cd5555">&#34;received value {:?}&#34;</span>,<span style="color:#bbb"> </span>rx.recv().unwrap());<span style="color:#bbb">
 </span></code></pre></div><p>What&rsquo;s different here is that the <code>send</code> call will not block even if there is no receiver to accept
 it. The <code>recv</code> call will block however until a value is sent. Therefore these channels are unlike
 Go&rsquo;s and cannot be used to synchronize two threads. The only way to achieve that is by using a
@@ -269,26 +157,26 @@ they support. The feature set is not going to be one to one but the similarities
 differences.</p>
 <p>Using the types in this crate, we can illustrate analogous examples to the Go snippets above. To
 start we can show how to send values on a channel.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#6ab825;font-weight:bold">use</span><span style="color:#666"> </span>crossbeam_channel<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">as</span><span style="color:#666"> </span>channel;<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#999;font-style:italic">// Create a non-buffered channel.
-</span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">let</span><span style="color:#666"> </span>(tx,<span style="color:#666"> </span>rx)<span style="color:#666"> </span>=<span style="color:#666"> </span>channel::unbounded();<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#999;font-style:italic">// Create a buffered channel with a capcity of one.
-</span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">let</span><span style="color:#666"> </span>(s,<span style="color:#666"> </span>r)<span style="color:#666"> </span>=<span style="color:#666"> </span>channel::bounded(<span style="color:#3677a9">1</span>);<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">for</span><span style="color:#666"> </span>i<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">in</span><span style="color:#666"> </span><span style="color:#3677a9">0</span>..<span style="color:#3677a9">100</span><span style="color:#666"> </span>{<span style="color:#666">
-</span><span style="color:#666">    </span><span style="color:#999;font-style:italic">// We can send an &#34;infinite&#34; amount of items into the unbounded channel without blocking.
-</span><span style="color:#999;font-style:italic"></span><span style="color:#666">    </span><span style="color:#999;font-style:italic">// This is different from Go as we don&#39;t need a receiver ready.
-</span><span style="color:#999;font-style:italic"></span><span style="color:#666">    </span>tx.send(i);<span style="color:#666">
-</span><span style="color:#666"></span>}<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#999;font-style:italic">// Try and receive one of the values in a blocking fashion.
-</span><span style="color:#999;font-style:italic"></span>println!(<span style="color:#ed9d13">&#34;{:?}&#34;</span>,<span style="color:#666"> </span>rx.recv());<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span>s.send(<span style="color:#3677a9">1</span>);<span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#999;font-style:italic">// This would block until the receiving half read the value!
-</span><span style="color:#999;font-style:italic"></span>s.send(<span style="color:#3677a9">2</span>);<span style="color:#666">
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#8b008b;font-weight:bold">use</span><span style="color:#bbb"> </span>crossbeam_channel<span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">as</span><span style="color:#bbb"> </span>channel;<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#228b22">// Create a non-buffered channel.
+</span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">let</span><span style="color:#bbb"> </span>(tx,<span style="color:#bbb"> </span>rx)<span style="color:#bbb"> </span>=<span style="color:#bbb"> </span>channel::unbounded();<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#228b22">// Create a buffered channel with a capcity of one.
+</span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">let</span><span style="color:#bbb"> </span>(s,<span style="color:#bbb"> </span>r)<span style="color:#bbb"> </span>=<span style="color:#bbb"> </span>channel::bounded(<span style="color:#b452cd">1</span>);<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">for</span><span style="color:#bbb"> </span>i<span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">in</span><span style="color:#bbb"> </span><span style="color:#b452cd">0</span>..<span style="color:#b452cd">100</span><span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#228b22">// We can send an &#34;infinite&#34; amount of items into the unbounded channel without blocking.
+</span><span style="color:#228b22"></span><span style="color:#bbb">    </span><span style="color:#228b22">// This is different from Go as we don&#39;t need a receiver ready.
+</span><span style="color:#228b22"></span><span style="color:#bbb">    </span>tx.send(i);<span style="color:#bbb">
+</span><span style="color:#bbb"></span>}<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#228b22">// Try and receive one of the values in a blocking fashion.
+</span><span style="color:#228b22"></span>println!(<span style="color:#cd5555">&#34;{:?}&#34;</span>,<span style="color:#bbb"> </span>rx.recv());<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span>s.send(<span style="color:#b452cd">1</span>);<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#228b22">// This would block until the receiving half read the value!
+</span><span style="color:#228b22"></span>s.send(<span style="color:#b452cd">2</span>);<span style="color:#bbb">
 </span></code></pre></div><p>Although crossbeam-channel can&rsquo;t use a special operator like <code>&lt;-</code>, the API is largely the same. We can control
 the behavior of the channels based on which methods are called on them. The sending half of the
 channel can call <code>send</code> and will block only if it is bounded. The receiving half of the channel
@@ -298,89 +186,89 @@ trait for the receiving half. The only difference here is that iteration stops w
 of the channel is dropped out of scope. One can emulate calling <code>close</code> like you would in Go by using the
 <a href="https://doc.rust-lang.org/std/mem/fn.drop.html">drop</a> function to explicitly tell the receiver
 that the sender is out of scope.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#6ab825;font-weight:bold">use</span><span style="color:#666"> </span>crossbeam_channel<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">as</span><span style="color:#666"> </span>channel;<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">let</span><span style="color:#666"> </span>(tx,<span style="color:#666"> </span>rx)<span style="color:#666"> </span>=<span style="color:#666"> </span>channel::unbounded();<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span>tx.send(<span style="color:#3677a9">1</span>);<span style="color:#666">
-</span><span style="color:#666"></span>tx.send(<span style="color:#3677a9">2</span>);<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#999;font-style:italic">// Explicitly `drop` this sender allowing the iterator to close.
-</span><span style="color:#999;font-style:italic"></span>drop(tx);<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#999;font-style:italic">// This will print out:
-</span><span style="color:#999;font-style:italic">// 1
-</span><span style="color:#999;font-style:italic">// 2
-</span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">for</span><span style="color:#666"> </span>item<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">in</span><span style="color:#666"> </span>rx<span style="color:#666"> </span>{<span style="color:#666">
-</span><span style="color:#666">    </span>println!(<span style="color:#ed9d13">&#34;{:?}&#34;</span>,<span style="color:#666"> </span>item);<span style="color:#666">
-</span><span style="color:#666"></span>}<span style="color:#666">
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#8b008b;font-weight:bold">use</span><span style="color:#bbb"> </span>crossbeam_channel<span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">as</span><span style="color:#bbb"> </span>channel;<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">let</span><span style="color:#bbb"> </span>(tx,<span style="color:#bbb"> </span>rx)<span style="color:#bbb"> </span>=<span style="color:#bbb"> </span>channel::unbounded();<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span>tx.send(<span style="color:#b452cd">1</span>);<span style="color:#bbb">
+</span><span style="color:#bbb"></span>tx.send(<span style="color:#b452cd">2</span>);<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#228b22">// Explicitly `drop` this sender allowing the iterator to close.
+</span><span style="color:#228b22"></span>drop(tx);<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#228b22">// This will print out:
+</span><span style="color:#228b22">// 1
+</span><span style="color:#228b22">// 2
+</span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">for</span><span style="color:#bbb"> </span>item<span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">in</span><span style="color:#bbb"> </span>rx<span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>println!(<span style="color:#cd5555">&#34;{:?}&#34;</span>,<span style="color:#bbb"> </span>item);<span style="color:#bbb">
+</span><span style="color:#bbb"></span>}<span style="color:#bbb">
 </span></code></pre></div><p>The crossbeam-channel crate also allows you select a channel operation which emulates the <code>select</code>
 statement in Go. It will block until an operation is ready or choose a default case if one is
 supplied. It is implemented as a macro in Rust which is expanded to source code at compile time.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#999;font-style:italic">// We have to declare macro usage since there is also a select macro in the standard library.
-</span><span style="color:#999;font-style:italic"></span><span style="color:#cd2828;font-weight:bold">#[macro_use]</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">extern</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">crate</span><span style="color:#666"> </span>crossbeam_channel;<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">use</span><span style="color:#666"> </span>crossbeam_channel<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">as</span><span style="color:#666"> </span>channel;<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">let</span><span style="color:#666"> </span>(tx1,<span style="color:#666"> </span>rx1)<span style="color:#666"> </span>=<span style="color:#666"> </span>channel::unbounded();<span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">let</span><span style="color:#666"> </span>(tx2,<span style="color:#666"> </span>rx2)<span style="color:#666"> </span>=<span style="color:#666"> </span>channel::unbounded();<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span>tx1.send(<span style="color:#3677a9">1</span>);<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#999;font-style:italic">// Using the select statement here will choose an operation at random since both will be ready
-</span><span style="color:#999;font-style:italic">// to proceed.
-</span><span style="color:#999;font-style:italic"></span>select!<span style="color:#666"> </span>{<span style="color:#666">
-</span><span style="color:#666">    </span>recv(rx1,<span style="color:#666"> </span>val)<span style="color:#666"> </span>=&gt;<span style="color:#666"> </span>println!(<span style="color:#ed9d13">&#34;got value {:?}&#34;</span>,<span style="color:#666"> </span>val),<span style="color:#666">
-</span><span style="color:#666">    </span>send(tx2,<span style="color:#666"> </span><span style="color:#3677a9">2</span>)<span style="color:#666"> </span>=&gt;<span style="color:#666"> </span>(),<span style="color:#666">
-</span><span style="color:#666"></span>}<span style="color:#666">
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#228b22">// We have to declare macro usage since there is also a select macro in the standard library.
+</span><span style="color:#228b22"></span><span style="color:#1e889b">#[macro_use]</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">extern</span><span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">crate</span><span style="color:#bbb"> </span>crossbeam_channel;<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">use</span><span style="color:#bbb"> </span>crossbeam_channel<span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">as</span><span style="color:#bbb"> </span>channel;<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">let</span><span style="color:#bbb"> </span>(tx1,<span style="color:#bbb"> </span>rx1)<span style="color:#bbb"> </span>=<span style="color:#bbb"> </span>channel::unbounded();<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">let</span><span style="color:#bbb"> </span>(tx2,<span style="color:#bbb"> </span>rx2)<span style="color:#bbb"> </span>=<span style="color:#bbb"> </span>channel::unbounded();<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span>tx1.send(<span style="color:#b452cd">1</span>);<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#228b22">// Using the select statement here will choose an operation at random since both will be ready
+</span><span style="color:#228b22">// to proceed.
+</span><span style="color:#228b22"></span>select!<span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>recv(rx1,<span style="color:#bbb"> </span>val)<span style="color:#bbb"> </span>=&gt;<span style="color:#bbb"> </span>println!(<span style="color:#cd5555">&#34;got value {:?}&#34;</span>,<span style="color:#bbb"> </span>val),<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>send(tx2,<span style="color:#bbb"> </span><span style="color:#b452cd">2</span>)<span style="color:#bbb"> </span>=&gt;<span style="color:#bbb"> </span>(),<span style="color:#bbb">
+</span><span style="color:#bbb"></span>}<span style="color:#bbb">
 </span></code></pre></div><h2 id="putting-it-all-together">Putting it All Together</h2>
 <p>Below is an example of a simulated pool of executors that need to perform some expensive computation.
 The thread pool crate allows me to spawn a number of threads that can execute work.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#6ab825;font-weight:bold">extern</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">crate</span><span style="color:#666"> </span>crossbeam_channel;<span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">extern</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">crate</span><span style="color:#666"> </span>threadpool;<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">use</span><span style="color:#666"> </span>std::thread::sleep;<span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">use</span><span style="color:#666"> </span>std::time::Duration;<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">use</span><span style="color:#666"> </span>crossbeam_channel<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">as</span><span style="color:#666"> </span>channel;<span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">use</span><span style="color:#666"> </span>threadpool::ThreadPool;<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">fn</span> <span style="color:#447fcf">work</span>(tx: <span style="color:#447fcf;text-decoration:underline">channel</span>::Sender&lt;<span style="color:#6ab825;font-weight:bold">usize</span>&gt;,<span style="color:#666"> </span>task: <span style="color:#6ab825;font-weight:bold">usize</span>)<span style="color:#666"> </span>{<span style="color:#666">
-</span><span style="color:#666">    </span><span style="color:#999;font-style:italic">// Simulate some expensive work that needs to be done.
-</span><span style="color:#999;font-style:italic"></span><span style="color:#666">    </span><span style="color:#999;font-style:italic">// This will sleep for one second.
-</span><span style="color:#999;font-style:italic"></span><span style="color:#666">    </span>sleep(Duration::new(<span style="color:#3677a9">1</span>,<span style="color:#666"> </span><span style="color:#3677a9">0</span>));<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666">    </span>tx.send(task);<span style="color:#666">
-</span><span style="color:#666"></span>}<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">fn</span> <span style="color:#447fcf">main</span>()<span style="color:#666"> </span>{<span style="color:#666">
-</span><span style="color:#666">    </span><span style="color:#6ab825;font-weight:bold">const</span><span style="color:#666"> </span>TASKS: <span style="color:#6ab825;font-weight:bold">usize</span> =<span style="color:#666"> </span><span style="color:#3677a9">100</span>;<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666">    </span><span style="color:#6ab825;font-weight:bold">let</span><span style="color:#666"> </span>(tx,<span style="color:#666"> </span>rx)<span style="color:#666"> </span>=<span style="color:#666"> </span>channel::unbounded();<span style="color:#666">
-</span><span style="color:#666">    </span><span style="color:#6ab825;font-weight:bold">let</span><span style="color:#666"> </span>pool<span style="color:#666"> </span>=<span style="color:#666"> </span>ThreadPool::new(<span style="color:#3677a9">4</span>);<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666">    </span><span style="color:#999;font-style:italic">// Create 100 superficial units of work and let the thread pool execute them.
-</span><span style="color:#999;font-style:italic"></span><span style="color:#666">    </span><span style="color:#6ab825;font-weight:bold">for</span><span style="color:#666"> </span>i<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">in</span><span style="color:#666"> </span><span style="color:#3677a9">0</span>..TASKS<span style="color:#666"> </span>{<span style="color:#666">
-</span><span style="color:#666">        </span><span style="color:#999;font-style:italic">// By calling clone here, we can share our sending half with each `work` function
-</span><span style="color:#999;font-style:italic"></span><span style="color:#666">        </span><span style="color:#999;font-style:italic">// that is called.
-</span><span style="color:#999;font-style:italic"></span><span style="color:#666">        </span><span style="color:#6ab825;font-weight:bold">let</span><span style="color:#666"> </span>tx<span style="color:#666"> </span>=<span style="color:#666"> </span>tx.clone();<span style="color:#666">
-</span><span style="color:#666">        </span>pool.execute(<span style="color:#6ab825;font-weight:bold">move</span><span style="color:#666"> </span>||<span style="color:#666"> </span>{<span style="color:#666">
-</span><span style="color:#666">            </span>work(tx,<span style="color:#666"> </span>i);<span style="color:#666">
-</span><span style="color:#666">        </span>});<span style="color:#666">
-</span><span style="color:#666">    </span>}<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666">    </span><span style="color:#999;font-style:italic">// We are done with our sending half so we can explicitly drop it here.
-</span><span style="color:#999;font-style:italic"></span><span style="color:#666">    </span>drop(tx);<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666">    </span><span style="color:#6ab825;font-weight:bold">for</span><span style="color:#666"> </span>i<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">in</span><span style="color:#666"> </span>rx<span style="color:#666"> </span>{<span style="color:#666">
-</span><span style="color:#666">        </span><span style="color:#6ab825;font-weight:bold">if</span><span style="color:#666"> </span>i<span style="color:#666"> </span>%<span style="color:#666"> </span><span style="color:#3677a9">5</span><span style="color:#666"> </span>==<span style="color:#666"> </span><span style="color:#3677a9">0</span><span style="color:#666"> </span>{<span style="color:#666">
-</span><span style="color:#666">            </span>println!(<span style="color:#ed9d13">&#34;done with {}% of the work&#34;</span>,<span style="color:#666"> </span>i);<span style="color:#666">
-</span><span style="color:#666">        </span>}<span style="color:#666">
-</span><span style="color:#666">    </span>}<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666">    </span>println!(<span style="color:#ed9d13">&#34;done with all of the work&#34;</span>);<span style="color:#666">
-</span><span style="color:#666"></span>}<span style="color:#666">
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#8b008b;font-weight:bold">extern</span><span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">crate</span><span style="color:#bbb"> </span>crossbeam_channel;<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">extern</span><span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">crate</span><span style="color:#bbb"> </span>threadpool;<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">use</span><span style="color:#bbb"> </span>std::thread::sleep;<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">use</span><span style="color:#bbb"> </span>std::time::Duration;<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">use</span><span style="color:#bbb"> </span>crossbeam_channel<span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">as</span><span style="color:#bbb"> </span>channel;<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">use</span><span style="color:#bbb"> </span>threadpool::ThreadPool;<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">fn</span> <span style="color:#008b45">work</span>(tx: <span style="color:#008b45;font-weight:bold">channel</span>::Sender&lt;<span style="color:#00688b;font-weight:bold">usize</span>&gt;,<span style="color:#bbb"> </span>task: <span style="color:#00688b;font-weight:bold">usize</span>)<span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#228b22">// Simulate some expensive work that needs to be done.
+</span><span style="color:#228b22"></span><span style="color:#bbb">    </span><span style="color:#228b22">// This will sleep for one second.
+</span><span style="color:#228b22"></span><span style="color:#bbb">    </span>sleep(Duration::new(<span style="color:#b452cd">1</span>,<span style="color:#bbb"> </span><span style="color:#b452cd">0</span>));<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span>tx.send(task);<span style="color:#bbb">
+</span><span style="color:#bbb"></span>}<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">fn</span> <span style="color:#008b45">main</span>()<span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#8b008b;font-weight:bold">const</span><span style="color:#bbb"> </span>TASKS: <span style="color:#00688b;font-weight:bold">usize</span> =<span style="color:#bbb"> </span><span style="color:#b452cd">100</span>;<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#8b008b;font-weight:bold">let</span><span style="color:#bbb"> </span>(tx,<span style="color:#bbb"> </span>rx)<span style="color:#bbb"> </span>=<span style="color:#bbb"> </span>channel::unbounded();<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#8b008b;font-weight:bold">let</span><span style="color:#bbb"> </span>pool<span style="color:#bbb"> </span>=<span style="color:#bbb"> </span>ThreadPool::new(<span style="color:#b452cd">4</span>);<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#228b22">// Create 100 superficial units of work and let the thread pool execute them.
+</span><span style="color:#228b22"></span><span style="color:#bbb">    </span><span style="color:#8b008b;font-weight:bold">for</span><span style="color:#bbb"> </span>i<span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">in</span><span style="color:#bbb"> </span><span style="color:#b452cd">0</span>..TASKS<span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span><span style="color:#bbb">        </span><span style="color:#228b22">// By calling clone here, we can share our sending half with each `work` function
+</span><span style="color:#228b22"></span><span style="color:#bbb">        </span><span style="color:#228b22">// that is called.
+</span><span style="color:#228b22"></span><span style="color:#bbb">        </span><span style="color:#8b008b;font-weight:bold">let</span><span style="color:#bbb"> </span>tx<span style="color:#bbb"> </span>=<span style="color:#bbb"> </span>tx.clone();<span style="color:#bbb">
+</span><span style="color:#bbb">        </span>pool.execute(<span style="color:#8b008b;font-weight:bold">move</span><span style="color:#bbb"> </span>||<span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span><span style="color:#bbb">            </span>work(tx,<span style="color:#bbb"> </span>i);<span style="color:#bbb">
+</span><span style="color:#bbb">        </span>});<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>}<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#228b22">// We are done with our sending half so we can explicitly drop it here.
+</span><span style="color:#228b22"></span><span style="color:#bbb">    </span>drop(tx);<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#8b008b;font-weight:bold">for</span><span style="color:#bbb"> </span>i<span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">in</span><span style="color:#bbb"> </span>rx<span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span><span style="color:#bbb">        </span><span style="color:#8b008b;font-weight:bold">if</span><span style="color:#bbb"> </span>i<span style="color:#bbb"> </span>%<span style="color:#bbb"> </span><span style="color:#b452cd">5</span><span style="color:#bbb"> </span>==<span style="color:#bbb"> </span><span style="color:#b452cd">0</span><span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span><span style="color:#bbb">            </span>println!(<span style="color:#cd5555">&#34;done with {}% of the work&#34;</span>,<span style="color:#bbb"> </span>i);<span style="color:#bbb">
+</span><span style="color:#bbb">        </span>}<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>}<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span>println!(<span style="color:#cd5555">&#34;done with all of the work&#34;</span>);<span style="color:#bbb">
+</span><span style="color:#bbb"></span>}<span style="color:#bbb">
 </span></code></pre></div><h2 id="conclusion">Conclusion</h2>
 <p>Channels are a powerful concurrency primitive that enable programs to share memory without the
 overhead of a lock. They offer features such as blocking or non-blocking sends and receives while
@@ -388,63 +276,23 @@ still being straightforward to use. It&rsquo;s much easier to reason about messa
 than it is to try and synchronize threads in another fashion.</p>
 <p>Thanks for reading! If you have any questions feel free to contact me at the email in my GitHub
 profile.</p>
- </div>
-    <footer class="post-footer">
 
-  <div class="post-footer-data">
-    
-<div class="tags">
-    
-</div>
+		</div>
 
-    <div class="date"> Jun 24, 2018 </div>
-  </div>
-
-</footer>
-
-
-  
-
-
-</article>
-
-  <footer>
-
-  <div class="social-links-footer">
-
-  
-  <a href="mailto:mail@garrettsquire.com"><div class="social-link">Email</div></a>
-  
-
-  
-  <a href="https://github.com/gsquire" target="_blank"><div class="social-link">GitHub</div></a>
-  
-
-  
-
-  
-  <a href="https://twitter.com/garrettsquire" target="_blank"><div class="social-link">Twitter</div></a>
-  
-
-  
-
-  <div class="social-link">
-  <a href="https://gsquire.github.io/static/index.xml" target="_blank">RSS</a>
-  </div>
-
+		<div class="post-tags">
+			
+				
+			
+		</div>
+		</div>
+	<div class="footer wrapper">
+	<nav class="nav">
+		<div> <a href="https://github.com/vividvilla/ezhil">Ezhil theme</a> | Built with <a href="https://gohugo.io">Hugo</a></div>
+	</nav>
 </div>
 
 
-  <div class="copyright">  </div>
 
-  <div class="poweredby">
-    Powered by <a href="https://gohugo.io/">Hugo</a>.
-  </div>
-
-  </footer>
-
-</div> 
-
+<script>feather.replace()</script>
 </body>
 </html>
-

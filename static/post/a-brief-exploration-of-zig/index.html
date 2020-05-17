@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>A Brief Exploration of Zig - Garrett&#39;s Blog</title><meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta property="og:title" content="A Brief Exploration of Zig" />
+<meta property="og:description" content="Why Zig? Zig is an intriguing new language that aims to fill a niche in the low-level development world. It offers a syntax that looks like a derivative of C along with some exciting features that make it an appealing modern alternative." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://gsquire.github.io/static/post/a-brief-exploration-of-zig/" />
+<meta property="article:published_time" content="2020-05-17T10:57:01-07:00" />
+<meta property="article:modified_time" content="2020-05-17T10:57:01-07:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="A Brief Exploration of Zig"/>
+<meta name="twitter:description" content="Why Zig? Zig is an intriguing new language that aims to fill a niche in the low-level development world. It offers a syntax that looks like a derivative of C along with some exciting features that make it an appealing modern alternative."/>
+<link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,300italic,400italic|Raleway:200,300" rel="stylesheet">
+
+	<link rel="stylesheet" type="text/css" media="screen" href="https://gsquire.github.io/static/css/normalize.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://gsquire.github.io/static/css/main.css" /><link rel="stylesheet" type="text/css" href="https://gsquire.github.io/static/css/dark.css" media="(prefers-color-scheme: dark)" />
+
+	<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+	<script src="https://gsquire.github.io/static/js/main.js"></script>
+</head>
+
+<body>
+	<div class="container wrapper post">
+		<div class="header">
+	<h1 class="site-title"><a href="https://gsquire.github.io/static/">Garrett&#39;s Blog</a></h1>
+	<div class="site-description"><h2>A place for my thoughts on software development</h2><nav class="nav social">
+			<ul class="flat"><a href="https://github.com/gsquire" title="GitHub"><i data-feather="github"></i></a><a href="https://twitter.com/garrettsquire" title="Twitter"><i data-feather="twitter"></i></a><a href="mailto:mail@garrettsquire.com" title="Email"><i data-feather="mail"></i></a></ul>
+		</nav>
+	</div>
+
+	<nav class="nav">
+		<ul class="flat">
+			
+		</ul>
+	</nav>
+</div>
+
+
+		<div class="post-header">
+			<h1 class="title">A Brief Exploration of Zig</h1>
+			<div class="meta">Posted at &mdash; May 17, 2020</div>
+		</div>
+
+		<div class="markdown">
+			<h2 id="why-zig">Why Zig?</h2>
+<p><a href="https://ziglang.org/">Zig</a> is an intriguing new language that aims to fill a niche in the
+low-level development world. It offers a syntax that looks like a derivative of C along with
+some exciting features that make it an appealing modern alternative. The main website highlights
+a lot of the ideas it tries to encompass so I won&rsquo;t list them here. What drew me in most though is
+Zig&rsquo;s builtin support for cross-compilation and the great support for embedding C sources. Considering
+that these are large endeavors within themselves, I wanted to explore the language a little more by
+writing a trivial command line program with it. At the time of writing this I am using Zig version 0.6.0 on
+MacOS. Since Zig is rapidly evolving, some of the code snippets may not compile in the future. The code
+may not adhere to best practices as well. If you find mistakes or non-idiomatic parts, the source is
+hosted on GitHub. I will always review patches or suggestions. I also draw parallels to other languages
+merely as a reference point for those familiar with them. This post is not intended to compare languages
+or posit any ideas that one may find superior.</p>
+<h2 id="getting-up-to-speed">Getting Up to Speed</h2>
+<p>Zig can be easily installed on your host system with a package manager or pre-built binary from
+<a href="https://github.com/ziglang/zig/releases">GitHub</a>. The <code>zig</code> tool helps you build and test your source
+among many other things. Zig source files have a <code>.zig</code> extension so I created <code>cat.zig</code> for my first
+project. Since <code>cat</code> is ubiquitous on Unix platforms, I wanted to write a small clone of it. The Zig
+version does not support any command line switches or arguments but it can print any number of files to
+standard output. I also wrote a Makefile to help with the compile and edit cycle. Once I had some
+familiar tooling in place, I started reading through the Zig <a href="https://ziglang.org/documentation/0.6.0/">documentation</a>.
+This was the best way for me to understand some of the philosophy of Zig while getting a better
+grasp on how to layout the source. I highly recommend looking at the basics of this page before writing
+any Zig.</p>
+<h2 id="diving-in">Diving In</h2>
+<p>For those familiar with C like languages, program execution starts at the main function. Zig is no different
+except it requires <code>main</code> to be public. This is denoted with the <code>pub</code> keyword. An example of how this may look
+is here:</p>
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">pub fn <span style="color:#008b45">main</span>() <span style="color:#00688b;font-weight:bold">void</span> {
+
+}
+</code></pre></div><p>In this case, <code>void</code> signifies that there is no return value but <code>main</code> can return anything you wish. Since we
+are writing a command line application we will likely want to access the program&rsquo;s arguments. I found that the
+standard library allows you to access them through an iterator type. Backing up a bit, we will import the
+standard library via Zig&rsquo;s builtin <code>@import</code> function. Here is what we need:</p>
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#228b22">// Bring in the standard library.
+</span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">const</span> std = <span style="color:#a61717;background-color:#e3d2d2">@</span>import(<span style="color:#cd5555">&#34;std&#34;</span>);
+
+<span style="color:#228b22">// Now that we are using the `std` namespace, we want to bring in the `fs` module too.
+</span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">const</span> fs = std.fs;
+</code></pre></div><p>Now that we have imported these, we can go ahead and access our program&rsquo;s arguments. Like I said previously, the
+arguments were part of an iterator type returned by the <code>args</code> function in <code>std.process</code>. The first thing I noticed
+however is that calling <code>next</code> to advance the iterator required an <code>allocator</code> as seen
+<a href="https://ziglang.org/documentation/0.6.0/std/#std;process.ArgIterator.next">here</a>. I decided to read through the
+source instead and stumbled upon <code>nextPosix</code> which although is limited to Unix platforms, did what I wanted.
+This function returns a slice of bytes or <code>null</code> as denoted by the return type of <code>?[]const u8</code>. This syntax is
+what Zig refers to as an optional type which is akin to Rust&rsquo;s <a href="https://doc.rust-lang.org/std/option/enum.Option.html">Option</a> type.
+Instead of having it be generic over some type, it uses <code>null</code> in place of <code>None</code>. So after consuming the first argument returned by the iterator, we can
+check our next value returned to see if we got a file name as an argument. If it is in fact <code>null</code>, we can print a message
+to standard error and exit with a non-zero return status. Something I noticed with the
+<a href="https://ziglang.org/documentation/0.6.0/std/#std;debug.warn">warn</a> function is that it requires a second argument regardless if you use a format
+specifier or not. Perhaps that is a design decision or maybe a limitation of the current implementation. Anyway, if we got a valid file name
+we will go ahead and try and read it. Since the argument iterator returns an optional type, we extract the value from it via the <code>?</code> operator as such:</p>
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">readFile(fname.?)
+</code></pre></div><p>Calling our <code>readFile</code> function leads us into the core of the program. The definition of this function reads as such:</p>
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">fn readFile(fname: []<span style="color:#8b008b;font-weight:bold">const</span> u8) !<span style="color:#00688b;font-weight:bold">void</span>
+</code></pre></div><p>It takes a single argument as a slice of bytes and either returns nothing or an error as denoted by <code>!</code>. In this case we use
+Zig&rsquo;s <code>anyerror</code> <a href="https://ziglang.org/documentation/0.6.0/#The-Global-Error-Set">error set</a>. You must capture error values
+and the compiler will enforce this. Luckily Zig has a lot of ways to handle them as described in the documentation. I will
+illustrate one of them in this example. First off, we get a handle to standard output through the standard library. This was
+relatively straightforward via the documentation. However, opening a file for reading wasn&rsquo;t as obvious to me. I fumbled around
+with various functions that dealt with absolute paths at first but that would impose an strict requirement for the program. Again I
+tried reading through the Zig source and found a function called <code>cwd</code> that allowed you to get a handle to a <code>Dir</code> structure. This
+type had functions that let you open files much more easily so I ended up with:</p>
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#228b22">// Note the `try` keyword here.
+</span><span style="color:#228b22"></span>var f = try fs.cwd().openFile(fname, fs.File.OpenFlags{ .read = <span style="color:#658b00">true</span> });
+
+<span style="color:#228b22">// Note that Zig has `defer` like Go does. This way we know our file handle will be closed regardless of function flow.
+</span><span style="color:#228b22"></span>defer f.close();
+</code></pre></div><p>The most significant part of this snippet is the <a href="https://ziglang.org/documentation/0.6.0/#try"><code>try</code></a> keyword. This offers a
+shortcut for catching errors and returning them. If we cannot open the file then the function will short-circuit and return the
+error associated with the call to <code>openFile</code>. If the call succeeds though, invoking <code>defer f.close()</code> ensures that our open handle
+gets closed. This is another nice-to-have so we don&rsquo;t have to litter the function flow with calls to <code>close</code>. It also enforces
+good developer habits since it is easy to forget to close resources if there is a lot of complex function logic.</p>
+<p>Now that we have an opened file, we can read its contents and print them to standard output. We initialize an array of fixed size to
+fill with bytes and continually call <code>read</code> until it returns 0 meaning that we reached the end. This is the same behavior as the C
+system call. Here is how that looks:</p>
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#228b22">// `undefined` here means that the memory is not initialized.
+</span><span style="color:#228b22"></span>var buf: [std.mem.page_size]u8 = undefined;
+
+<span style="color:#228b22">// `read` can fail so we have to `try`.
+</span><span style="color:#228b22">// The `[0..]` turns the `buf` array into a slice for `read` to use.
+</span><span style="color:#228b22"></span>var bytes_read = try f.read(buf[<span style="color:#b452cd">0.</span>.]);
+
+<span style="color:#228b22">// Fill up our buffer and print it to standard output.
+</span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">while</span> (bytes_read &gt; <span style="color:#b452cd">0</span>) {
+    try stdout.print(<span style="color:#cd5555">&#34;{}&#34;</span>, .{buf[<span style="color:#b452cd">0.</span>.bytes_read]});
+    bytes_read = try f.read(buf[<span style="color:#b452cd">0.</span>.]);
+}
+</code></pre></div><h2 id="building-executables">Building Executables</h2>
+<p>As I mentioned earlier, the <code>zig</code> tool lets you build executables very easily. With a couple one line make targets, I was able to build
+one for my native machine and another for my Linux server. This is fascinating to me since I didn&rsquo;t need to install any other dependencies.
+Zig ships with various libc libraries so all I had to do was pass the <code>-target</code> flag to the <code>zig</code> tool:</p>
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">zig build-exe cat.zig -target x86_64-linux-gnu --release-fast
+</code></pre></div><p>After that I copied it up to my Linux server and was able to use it there as if I had built it on that machine. That is incredible.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Zig was a lot of fun to work with for me. I know the language is still young and changing daily so I expected a few paper cuts here and there.
+I hope to take what I learned and create some patches myself. If nothing more I hope I encouraged you to do the same or to help out in another way.
+If you have any comments or criticisms, my email is available in the page&rsquo;s header. The source is also available <a href="https://github.com/gsquire/cat-zig">here</a>.
+Thanks for taking the time to read this!</p>
+
+		</div>
+
+		<div class="post-tags">
+			
+				
+			
+		</div>
+		</div>
+	<div class="footer wrapper">
+	<nav class="nav">
+		<div> <a href="https://github.com/vividvilla/ezhil">Ezhil theme</a> | Built with <a href="https://gohugo.io">Hugo</a></div>
+	</nav>
+</div>
+
+
+
+<script>feather.replace()</script>
+</body>
+</html>

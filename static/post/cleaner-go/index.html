@@ -1,172 +1,57 @@
 <!DOCTYPE html>
-<html lang="en-us">
-
+<html>
 <head>
-<meta charset="utf-8" />
-<meta name="author" content="" />
-<meta name="description" content="" />
-<meta name="keywords" content="" />
-<meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
-<meta name="generator" content="Hugo 0.70.0" />
-
-<link rel="canonical" href="https://gsquire.github.io/static/post/cleaner-go/">
-<base href="https://gsquire.github.io/static/" />
-<meta property="og:title" content="Cleaner Go" />
-<meta property="og:description" content="Large code bases can become increasingly complex to manage as you add more code while also refactoring what is there already. Even with diligent code reviews, it is easy to gloss over common programming mistakes. Sometimes code can be written in a simpler way. Or perhaps a recent refactor left a few functions in that are no longer used.
-Luckily the go tool includes a sub-command that will examine Go source and report suspicious lines based on heuristics that the compiler will not catch." />
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>Cleaner Go - Garrett&#39;s Blog</title><meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta property="og:title" content="Cleaner Go" />
+<meta property="og:description" content="Large code bases can become increasingly complex to manage as you add more code while also refactoring what is there already." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://gsquire.github.io/static/post/cleaner-go/" />
 <meta property="article:published_time" content="2017-03-06T14:30:42-08:00" />
 <meta property="article:modified_time" content="2017-03-06T14:30:42-08:00" />
-
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Cleaner Go"/>
-<meta name="twitter:description" content="Large code bases can become increasingly complex to manage as you add more code while also refactoring what is there already. Even with diligent code reviews, it is easy to gloss over common programming mistakes. Sometimes code can be written in a simpler way. Or perhaps a recent refactor left a few functions in that are no longer used.
-Luckily the go tool includes a sub-command that will examine Go source and report suspicious lines based on heuristics that the compiler will not catch."/>
+<meta name="twitter:description" content="Large code bases can become increasingly complex to manage as you add more code while also refactoring what is there already."/>
+<link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,300italic,400italic|Raleway:200,300" rel="stylesheet">
 
+	<link rel="stylesheet" type="text/css" media="screen" href="https://gsquire.github.io/static/css/normalize.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://gsquire.github.io/static/css/main.css" /><link rel="stylesheet" type="text/css" href="https://gsquire.github.io/static/css/dark.css" media="(prefers-color-scheme: dark)" />
 
-<meta itemprop="name" content="Cleaner Go">
-<meta itemprop="description" content="Large code bases can become increasingly complex to manage as you add more code while also refactoring what is there already. Even with diligent code reviews, it is easy to gloss over common programming mistakes. Sometimes code can be written in a simpler way. Or perhaps a recent refactor left a few functions in that are no longer used.
-Luckily the go tool includes a sub-command that will examine Go source and report suspicious lines based on heuristics that the compiler will not catch.">
-<meta itemprop="datePublished" content="2017-03-06T14:30:42-08:00" />
-<meta itemprop="dateModified" content="2017-03-06T14:30:42-08:00" />
-<meta itemprop="wordCount" content="740">
-
-
-
-<meta itemprop="keywords" content="" />
-
-<link rel="stylesheet" href="css/layout.css" />
-<style type="text/css">
-body {
-  background-color: #101010;
-  color: #c0c0c0;
-}
-
-a { color: #c0c0c0; }
-
-pre {
-  background: #1d1f21;
-  border: 1px solid #c0c0c0;
-  border-radius: 5px;
-}
-
-code {
-  background: #1d1f21;
-}
-
-blockquote {
-  background: #1d1f21;
-  border-left: 3px solid #c0c0c0;
-}
-
-table {
-  margin: 1em auto;
-  border-collapse: collapse;
-}
-
-table, th, td {
-  border: 1px solid #c0c0c0;
-}
-
-th {
-  background: #c0c0c0;
-  color: #101010;
-}
-
-.siteTitle a { color: #5f8c96; }
-
-.post .content h1{ color: #5f8c96; }
-.post .content h2{ color: #5f8c96; }
-.post .content h3{ color: #5f8c96; }
-.post .content h4{ color: #5f8c96; }
-.post .content h5{ color: #5f8c96; }
-.post .content h6{ color: #5f8c96; }
-.post .content a:hover { color: #5f8c96; }
-.social-link:hover { color: #5f8c96; }
-.nav-item-title:hover { color: #5f8c96; }
-.tag a:hover { color: #5f8c96; }
-.copyright { color: #404040 }
-.poweredby { color: #404040 }
-.poweredby a { color: #404040; }
-.post-preview .title a{ color: #5f8c96; }
-.content-item a:hover{
-  text-decoration: underline;
-  color: #5f8c96;
-}
-.post-list .title { color: #5f8c96; }
-.rmore { color: #5f8c96; }
-.terms .term a:hover {
-  text-decoration: underline;
-  color: #5f8c96;
-}
-
-</style>
-
-
-
-<title>
-
-
-     Cleaner Go 
-
-</title>
-
+	<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+	<script src="https://gsquire.github.io/static/js/main.js"></script>
 </head>
 
-
 <body>
-<div class="main">
-<header>
+	<div class="container wrapper post">
+		<div class="header">
+	<h1 class="site-title"><a href="https://gsquire.github.io/static/">Garrett&#39;s Blog</a></h1>
+	<div class="site-description"><h2>A place for my thoughts on software development</h2><nav class="nav social">
+			<ul class="flat"><a href="https://github.com/gsquire" title="GitHub"><i data-feather="github"></i></a><a href="https://twitter.com/garrettsquire" title="Twitter"><i data-feather="twitter"></i></a><a href="mailto:mail@garrettsquire.com" title="Email"><i data-feather="mail"></i></a></ul>
+		</nav>
+	</div>
 
-<div class="header-bar">
-
-  <nav>
-    <div class="siteTitle">
-      <a href="https://gsquire.github.io/static/">Garrett&#39;s Blog</a>
-    </div> 
-
-    
-    
-
-  </nav>
-</div>
-
-  
-<div class="social-links-header">
-
-  
-  <a href="mailto:mail@garrettsquire.com"><div class="social-link">email</div></a>
-  
-
-  
-  <a href="https://github.com/gsquire" target="_blank"><div class="social-link">gh</div></a>
-  
-
-  
-
-  
-  <a href="https://twitter.com/garrettsquire" target="_blank"><div class="social-link">twtr</div></a>
-  
-
-  
-
+	<nav class="nav">
+		<ul class="flat">
+			
+		</ul>
+	</nav>
 </div>
 
 
-</header>
+		<div class="post-header">
+			<h1 class="title">Cleaner Go</h1>
+			<div class="meta">Posted at &mdash; Mar 6, 2017</div>
+		</div>
 
-
-<article class="post">
-    <h1 class="title"> Cleaner Go </h1>
-    <div class="content"> <p>Large code bases can become increasingly complex to manage as you add more code while
+		<div class="markdown">
+			<p>Large code bases can become increasingly complex to manage as you add more code while
 also refactoring what is there already. Even with diligent code reviews, it is easy to gloss over
 common programming mistakes. Sometimes code can be written in a simpler way. Or perhaps a recent
 refactor left a few functions in that are no longer used.</p>
 <p>Luckily the <code>go</code> tool includes a sub-command that will examine Go source and report suspicious lines
 based on heuristics that the compiler will not catch. You can run <code>go vet</code> over you entire source
 tree as such:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">go vet ./...
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">go vet ./...
 </code></pre></div><p>The vet sub-command is limited by what it catches but is a good first pass that can catch errors
 that a developer might not.</p>
 <h2 id="static-analysis">Static Analysis</h2>
@@ -178,35 +63,35 @@ certain ones you find useful.</p>
 examples are contrived, they will compile and pass <code>go vet</code>.</p>
 <h4 id="simplifying-code">Simplifying Code</h4>
 <p><code>gosimple</code> analyzes your code to see if it can be written in a simpler manner. For example:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6ab825;font-weight:bold">package</span> main
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8b008b;font-weight:bold">package</span> main
 
-<span style="color:#6ab825;font-weight:bold">import</span> <span style="color:#ed9d13">&#34;fmt&#34;</span>
+<span style="color:#8b008b;font-weight:bold">import</span> <span style="color:#cd5555">&#34;fmt&#34;</span>
 
-<span style="color:#6ab825;font-weight:bold">func</span> <span style="color:#447fcf">bad</span>(b <span style="color:#6ab825;font-weight:bold">bool</span>) {
-	<span style="color:#6ab825;font-weight:bold">if</span> b == <span style="color:#6ab825;font-weight:bold">true</span> {
-		fmt.<span style="color:#447fcf">Println</span>(<span style="color:#ed9d13">&#34;true&#34;</span>)
-	} <span style="color:#6ab825;font-weight:bold">else</span> {
-		fmt.<span style="color:#447fcf">Println</span>(<span style="color:#ed9d13">&#34;false&#34;</span>)
+<span style="color:#8b008b;font-weight:bold">func</span> <span style="color:#008b45">bad</span>(b <span style="color:#00688b;font-weight:bold">bool</span>) {
+	<span style="color:#8b008b;font-weight:bold">if</span> b == <span style="color:#8b008b;font-weight:bold">true</span> {
+		fmt.<span style="color:#008b45">Println</span>(<span style="color:#cd5555">&#34;true&#34;</span>)
+	} <span style="color:#8b008b;font-weight:bold">else</span> {
+		fmt.<span style="color:#008b45">Println</span>(<span style="color:#cd5555">&#34;false&#34;</span>)
 	}
 }
 
-<span style="color:#6ab825;font-weight:bold">func</span> <span style="color:#447fcf">main</span>() {
-	<span style="color:#447fcf">bad</span>(<span style="color:#6ab825;font-weight:bold">true</span>)
+<span style="color:#8b008b;font-weight:bold">func</span> <span style="color:#008b45">main</span>() {
+	<span style="color:#008b45">bad</span>(<span style="color:#8b008b;font-weight:bold">true</span>)
 }
 </code></pre></div><p>When running <code>gosimple main.go</code> you will see this output:</p>
 <p><code>main.go:6:5: should omit comparison to bool constant, can be simplified to b (S1002)</code></p>
 <h4 id="static-checks">Static Checks</h4>
 <p><code>staticcheck</code> is a great lint because it can find subtle issues in your Go code. For example:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6ab825;font-weight:bold">package</span> main
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8b008b;font-weight:bold">package</span> main
 
-<span style="color:#6ab825;font-weight:bold">import</span> (
-	<span style="color:#ed9d13">&#34;fmt&#34;</span>
-	<span style="color:#ed9d13">&#34;strings&#34;</span>
+<span style="color:#8b008b;font-weight:bold">import</span> (
+	<span style="color:#cd5555">&#34;fmt&#34;</span>
+	<span style="color:#cd5555">&#34;strings&#34;</span>
 )
 
-<span style="color:#6ab825;font-weight:bold">func</span> <span style="color:#447fcf">main</span>() {
-	s := strings.<span style="color:#447fcf">Replace</span>(<span style="color:#ed9d13">&#34;bad-bad-bad&#34;</span>, <span style="color:#ed9d13">&#34;-&#34;</span>, <span style="color:#ed9d13">&#34;&amp;&#34;</span>, <span style="color:#3677a9">0</span>)
-	fmt.<span style="color:#447fcf">Println</span>(s)
+<span style="color:#8b008b;font-weight:bold">func</span> <span style="color:#008b45">main</span>() {
+	s := strings.<span style="color:#008b45">Replace</span>(<span style="color:#cd5555">&#34;bad-bad-bad&#34;</span>, <span style="color:#cd5555">&#34;-&#34;</span>, <span style="color:#cd5555">&#34;&amp;&#34;</span>, <span style="color:#b452cd">0</span>)
+	fmt.<span style="color:#008b45">Println</span>(s)
 }
 </code></pre></div><p>When running <code>staticcheck main.go</code> you will see this output:</p>
 <p><code>main.go:9:48: calling strings.Replace with n == 0 will return no results, did you mean -1? (SA1018)</code></p>
@@ -218,17 +103,17 @@ would have had the wrong value. This would have been a nightmare to debug.</p>
 <h4 id="unused">Unused</h4>
 <p>When refactoring it is often easy to forget about certain bits of code. There may be functions or
 variables that are defined but not used anywhere. This is often referred to as dead code. For example:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6ab825;font-weight:bold">package</span> main
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8b008b;font-weight:bold">package</span> main
 
-<span style="color:#6ab825;font-weight:bold">import</span> <span style="color:#ed9d13">&#34;fmt&#34;</span>
+<span style="color:#8b008b;font-weight:bold">import</span> <span style="color:#cd5555">&#34;fmt&#34;</span>
 
-<span style="color:#6ab825;font-weight:bold">const</span> a = <span style="color:#3677a9">5</span>
+<span style="color:#8b008b;font-weight:bold">const</span> a = <span style="color:#b452cd">5</span>
 
-<span style="color:#6ab825;font-weight:bold">func</span> <span style="color:#447fcf">main</span>() {
-	fmt.<span style="color:#447fcf">Println</span>(<span style="color:#ed9d13">&#34;hello&#34;</span>)
+<span style="color:#8b008b;font-weight:bold">func</span> <span style="color:#008b45">main</span>() {
+	fmt.<span style="color:#008b45">Println</span>(<span style="color:#cd5555">&#34;hello&#34;</span>)
 }
 </code></pre></div><p>When running <code>unused main.go</code> you will see this output:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">main.go:5:7: const a is unused (U1000)
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">main.go:5:7: const a is unused (U1000)
 </code></pre></div><h4 id="git-hooks">Git Hooks</h4>
 <p>I found that these tools were important in my workflow and decided to add them as a pre-commit hook
 in git. For those unfamiliar with git hooks, the documentation for them can be found <a href="https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks">here</a>.
@@ -239,26 +124,26 @@ before a new commit is made in the current branch as implied by the name. It add
 it is nice to have in the sense that it catches problems and allows you to adjust the working tree. This
 ensures that all commits are up to your standard.</p>
 <p>Here is the pre-commit hook I use for all my go projects:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#cd2828;font-weight:bold">#!/bin/bash
-</span><span style="color:#cd2828;font-weight:bold"></span>
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#1e889b">#!/bin/bash
+</span><span style="color:#1e889b"></span>
 check_exit() {
-    <span style="color:#6ab825;font-weight:bold">if</span> [ <span style="color:#40ffff">$?</span> -eq <span style="color:#3677a9">1</span> ]; <span style="color:#6ab825;font-weight:bold">then</span>
-        <span style="color:#24909d">printf</span> <span style="color:#ed9d13">&#34;linting failed when running </span><span style="color:#40ffff">$1</span><span style="color:#ed9d13">...\n&#34;</span>
-        <span style="color:#24909d">exit</span> <span style="color:#3677a9">1</span>
-    <span style="color:#6ab825;font-weight:bold">fi</span>
+    <span style="color:#8b008b;font-weight:bold">if</span> [ <span style="color:#00688b">$?</span> -eq <span style="color:#b452cd">1</span> ]; <span style="color:#8b008b;font-weight:bold">then</span>
+        <span style="color:#658b00">printf</span> <span style="color:#cd5555">&#34;linting failed when running </span><span style="color:#00688b">$1</span><span style="color:#cd5555">...\n&#34;</span>
+        <span style="color:#658b00">exit</span> <span style="color:#b452cd">1</span>
+    <span style="color:#8b008b;font-weight:bold">fi</span>
 }
 
-go vet <span style="color:#6ab825;font-weight:bold">$(</span>glide nv<span style="color:#6ab825;font-weight:bold">)</span>
-check_exit <span style="color:#ed9d13">&#34;go vet&#34;</span>
+go vet <span style="color:#8b008b;font-weight:bold">$(</span>glide nv<span style="color:#8b008b;font-weight:bold">)</span>
+check_exit <span style="color:#cd5555">&#34;go vet&#34;</span>
 
-gosimple <span style="color:#6ab825;font-weight:bold">$(</span>glide nv<span style="color:#6ab825;font-weight:bold">)</span>
-check_exit <span style="color:#ed9d13">&#34;gosimple&#34;</span>
+gosimple <span style="color:#8b008b;font-weight:bold">$(</span>glide nv<span style="color:#8b008b;font-weight:bold">)</span>
+check_exit <span style="color:#cd5555">&#34;gosimple&#34;</span>
 
-unused <span style="color:#6ab825;font-weight:bold">$(</span>glide nv<span style="color:#6ab825;font-weight:bold">)</span>
-check_exit <span style="color:#ed9d13">&#34;unused&#34;</span>
+unused <span style="color:#8b008b;font-weight:bold">$(</span>glide nv<span style="color:#8b008b;font-weight:bold">)</span>
+check_exit <span style="color:#cd5555">&#34;unused&#34;</span>
 
-staticcheck <span style="color:#6ab825;font-weight:bold">$(</span>glide nv<span style="color:#6ab825;font-weight:bold">)</span>
-check_exit <span style="color:#ed9d13">&#34;staticcheck&#34;</span>
+staticcheck <span style="color:#8b008b;font-weight:bold">$(</span>glide nv<span style="color:#8b008b;font-weight:bold">)</span>
+check_exit <span style="color:#cd5555">&#34;staticcheck&#34;</span>
 </code></pre></div><p>The <code>glide nv</code> command lists all non-dependency code used in a project. It&rsquo;s akin to <code>./...</code> in the sense
 that is runs over all packages. Glide is the dependency manager I use for my projects and the site
 can be found <a href="https://glide.sh">here</a> for those that are interested.</p>
@@ -266,63 +151,23 @@ can be found <a href="https://glide.sh">here</a> for those that are interested.<
 <p>By adding static analysis tools to your Go code, you can help prevent common coding mistakes and
 make your development environment better in the process. Having this be automatic is also a
 catalyst for more iterative and effective coding.</p>
- </div>
-    <footer class="post-footer">
 
-  <div class="post-footer-data">
-    
-<div class="tags">
-    
-</div>
+		</div>
 
-    <div class="date"> Mar 6, 2017 </div>
-  </div>
-
-</footer>
-
-
-  
-
-
-</article>
-
-  <footer>
-
-  <div class="social-links-footer">
-
-  
-  <a href="mailto:mail@garrettsquire.com"><div class="social-link">Email</div></a>
-  
-
-  
-  <a href="https://github.com/gsquire" target="_blank"><div class="social-link">GitHub</div></a>
-  
-
-  
-
-  
-  <a href="https://twitter.com/garrettsquire" target="_blank"><div class="social-link">Twitter</div></a>
-  
-
-  
-
-  <div class="social-link">
-  <a href="https://gsquire.github.io/static/index.xml" target="_blank">RSS</a>
-  </div>
-
+		<div class="post-tags">
+			
+				
+			
+		</div>
+		</div>
+	<div class="footer wrapper">
+	<nav class="nav">
+		<div> <a href="https://github.com/vividvilla/ezhil">Ezhil theme</a> | Built with <a href="https://gohugo.io">Hugo</a></div>
+	</nav>
 </div>
 
 
-  <div class="copyright">  </div>
 
-  <div class="poweredby">
-    Powered by <a href="https://gohugo.io/">Hugo</a>.
-  </div>
-
-  </footer>
-
-</div> 
-
+<script>feather.replace()</script>
 </body>
 </html>
-
