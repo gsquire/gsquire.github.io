@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>Start Fuzzing With Zig - Garrett&#39;s Blog</title><meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta property="og:title" content="Start Fuzzing With Zig" />
+<meta property="og:description" content="Fuzzing is a testing technique in which a program generates random data as input for another program to consume. The goal is to find data which could cause corruption or other fatal issues in the software that is being tested." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://gsquire.github.io/static/post/start-fuzzing-with-zig/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-06-06T23:23:29&#43;00:00" />
+<meta property="article:modified_time" content="2021-06-06T23:23:29&#43;00:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Start Fuzzing With Zig"/>
+<meta name="twitter:description" content="Fuzzing is a testing technique in which a program generates random data as input for another program to consume. The goal is to find data which could cause corruption or other fatal issues in the software that is being tested."/>
+<link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,300italic,400italic|Raleway:200,300" rel="stylesheet">
+
+	<link rel="stylesheet" type="text/css" media="screen" href="https://gsquire.github.io/static/css/normalize.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://gsquire.github.io/static/css/main.css" /><link rel="stylesheet" type="text/css" href="https://gsquire.github.io/static/css/dark.css" media="(prefers-color-scheme: dark)" />
+
+	<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+	<script src="https://gsquire.github.io/static/js/main.js"></script>
+</head>
+
+<body>
+	<div class="container wrapper post">
+		<div class="header">
+	<h1 class="site-title"><a href="https://gsquire.github.io/static/">Garrett&#39;s Blog</a></h1>
+	<div class="site-description"><h2>A place for my thoughts on software development</h2><nav class="nav social">
+			<ul class="flat"><a href="https://github.com/gsquire" title="GitHub"><i data-feather="github"></i></a><a href="https://twitter.com/garrettsquire" title="Twitter"><i data-feather="twitter"></i></a><a href="mailto:mail@garrettsquire.com" title="Email"><i data-feather="mail"></i></a></ul>
+		</nav>
+	</div>
+
+	<nav class="nav">
+		<ul class="flat">
+			
+		</ul>
+	</nav>
+</div>
+
+
+		<div class="post-header">
+			<h1 class="title">Start Fuzzing With Zig</h1>
+			<div class="meta">Posted at &mdash; Jun 6, 2021</div>
+		</div>
+
+		<div class="markdown">
+			<p>Fuzzing is a testing technique in which a program generates random data as input for another program
+to consume. The goal is to find data which could cause corruption or other fatal issues in the
+software that is being tested. Machines will be able to generate test cases much quicker than humans
+thus making it a great way to test your software.</p>
+<p>Fuzzing has proven effective enough to be included as a first class citizen in Go. At the
+time of writing this post you can read about its inclusion in the beta version <a href="https://blog.golang.org/fuzz-beta">here</a>.
+This may set a precedent for other languages to follow depending on how successful it is.</p>
+<p>Throughout the rest of this short post I hope to cover an interesting way that one may be able to
+start fuzzing with Zig.</p>
+<h2 id="setup">Setup</h2>
+<p><a href="https://aflplus.plus/">AFL++</a> is the successor the AFL library that incorporates many more features.
+In order to use this library, I used the <a href="https://github.com/rust-fuzz/afl.rs"><code>cargo afl</code></a> tool which
+handles the linking and AFL++ library usage for us quite easily. So you will need both a Rust and Zig tool chain
+to follow this example. To see how to install these tool chains you can see the instructions on their
+<a href="https://www.rust-lang.org">respective</a> <a href="https://ziglang.org">websites</a>.</p>
+<h2 id="demonstration">Demonstration</h2>
+<p>For this post, we will exercise Zig&rsquo;s <code>json.validate</code> function from its standard library. This function
+accepts a byte slice and returns a boolean signifying if the JSON is valid or not. In order for the
+<code>cargo-afl</code> tool to be able to pass input to this function, we must expose it as a C API. Luckily Zig
+makes this trivial via the <code>export</code> keyword:</p>
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-zig" data-lang="zig"><span style="color:#8b008b;font-weight:bold">const</span><span style="color:#bbb"> </span>json<span style="color:#bbb"> </span>=<span style="color:#bbb"> </span><span style="color:#658b00">@import</span>(<span style="color:#cd5555">&#34;std&#34;</span>).json;<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">export</span><span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">fn</span><span style="color:#bbb"> </span>validate_json(j:<span style="color:#bbb"> </span>[*]<span style="color:#8b008b;font-weight:bold">const</span><span style="color:#bbb"> </span><span style="color:#00688b;font-weight:bold">u8</span>,<span style="color:#bbb"> </span>j_len:<span style="color:#bbb"> </span><span style="color:#00688b;font-weight:bold">usize</span>)<span style="color:#bbb"> </span><span style="color:#00688b;font-weight:bold">usize</span><span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#8b008b;font-weight:bold">const</span><span style="color:#bbb"> </span>source<span style="color:#bbb"> </span>=<span style="color:#bbb"> </span>j[<span style="color:#b452cd">0</span>..j_len];<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#8b008b;font-weight:bold">if</span><span style="color:#bbb"> </span>(json.validate(source))<span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span><span style="color:#bbb">        </span><span style="color:#8b008b;font-weight:bold">return</span><span style="color:#bbb"> </span><span style="color:#b452cd">0</span>;<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>}<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#8b008b;font-weight:bold">return</span><span style="color:#bbb"> </span><span style="color:#b452cd">1</span>;<span style="color:#bbb">
+</span><span style="color:#bbb"></span>}<span style="color:#bbb">
+</span></code></pre></div><p>At this point we want to make a library that <code>cargo-afl</code> can use so we go ahead and build a library
+after writing this in a file called <code>json.zig</code>:</p>
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">zig build-lib json.zig
+</code></pre></div><p>This should produce an archive called <code>libjson.a</code> that you can use to link against later on.</p>
+<p>Now we will get the actual fuzzing tool configured. With Rust installed you can run this command:</p>
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">cargo install afl
+</code></pre></div><p>This may take a while but once you see it install successfully, we&rsquo;ll make a new binary as such:</p>
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">cargo new fuzzig
+</code></pre></div><p>You should be able to jump into this newly created directory and get your manifest edited to use
+<code>cargo-afl</code>. The file you will want to edit is called <code>Cargo.toml</code>. In here you will list the
+following dependencies:</p>
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">[dependencies]
+afl = <span style="color:#cd5555">&#34;0.10&#34;</span>
+libc = <span style="color:#cd5555">&#34;0.2&#34;</span>
+</code></pre></div><p>Another file you will want to create is a custom build script. Name this file <code>build.rs</code> and add the
+following contents in:</p>
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#8b008b;font-weight:bold">fn</span> <span style="color:#008b45">main</span>()<span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>println!(<span style="color:#cd5555">&#34;cargo:rustc-link-search=.&#34;</span>);<span style="color:#bbb">
+</span><span style="color:#bbb"></span>}<span style="color:#bbb">
+</span></code></pre></div><p>This will tell <code>cargo</code> to search in the current directory for any static libraries we may be interested
+in. Go ahead and copy <code>libjson.a</code> into the current directory now as well:</p>
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">cp ../libjson.a .
+</code></pre></div><p>Next we will edit the binary file under <code>src/main.rs</code>:</p>
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#8b008b;font-weight:bold">use</span><span style="color:#bbb"> </span>afl::fuzz;<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">use</span><span style="color:#bbb"> </span>libc::size_t;<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#1e889b">#[link(name = </span><span style="color:#cd5555">&#34;json&#34;</span><span style="color:#1e889b">, kind = </span><span style="color:#cd5555">&#34;static&#34;</span><span style="color:#1e889b">)]</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">extern</span><span style="color:#bbb"> </span><span style="color:#cd5555">&#34;C&#34;</span><span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#8b008b;font-weight:bold">fn</span> <span style="color:#008b45">validate_json</span>(j: *<span style="color:#8b008b;font-weight:bold">const</span><span style="color:#bbb"> </span><span style="color:#00688b;font-weight:bold">u8</span>,<span style="color:#bbb"> </span>j_len: <span style="color:#008b45;font-weight:bold">size_t</span>)<span style="color:#bbb"> </span>-&gt; <span style="color:#008b45;font-weight:bold">size_t</span>;<span style="color:#bbb">
+</span><span style="color:#bbb"></span>}<span style="color:#bbb">
+</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">fn</span> <span style="color:#008b45">main</span>()<span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>fuzz!(|data: <span style="color:#8b008b;font-weight:bold">&amp;</span>[<span style="color:#00688b;font-weight:bold">u8</span>]|<span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span><span style="color:#bbb">        </span><span style="color:#8b008b;font-weight:bold">unsafe</span><span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span><span style="color:#bbb">            </span>validate_json(data.as_ptr(),<span style="color:#bbb"> </span>data.len());<span style="color:#bbb">
+</span><span style="color:#bbb">        </span>}<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>});<span style="color:#bbb">
+</span><span style="color:#bbb"></span>}<span style="color:#bbb">
+</span></code></pre></div><p>We set up the <code>validate_json</code> API with a string input as well as a corresponding length. Inside the
+main function we use the <code>fuzz</code> macro that accepts a single parameter as a slice of bytes as input.
+Inside here we call the function we want to fuzz which in this case is our <code>validate_json</code> function
+provided by the Zig API. We have to use <code>unsafe</code> here since we are going across FFI boundaries.</p>
+<p>The last step we want to do before running the fuzz tool is create a couple directories:</p>
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mkdir in out
+</code></pre></div><p>The <code>cargo-afl</code> tool will put any failures inside the out directory and use the in directory as input
+seeds. In this case we will create a few files with valid JSON that the library will then build new
+inputs with.</p>
+<p>The final commands are:</p>
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">cargo afl build
+
+<span style="color:#228b22"># The fuzzing tool will run indefinitely until canceled with CTRL-C.</span>
+cargo afl fuzz -i in -o out target/debug/fuzzig
+</code></pre></div><h2 id="conclusion">Conclusion</h2>
+<p>This <em>is not</em> the most straightforward way to get started with fuzzing in Zig. But it should provide
+little friction in getting started with any fuzz testing you want to do. If you find any bugs, feel
+free to drop an issue <a href="https://github.com/gsquire/fuzzig/issues">here</a>.</p>
+
+		</div>
+
+		<div class="post-tags">
+			
+				
+			
+		</div>
+		</div>
+	<div class="footer wrapper">
+	<nav class="nav">
+		<div> <a href="https://github.com/vividvilla/ezhil">Ezhil theme</a> | Built with <a href="https://gohugo.io">Hugo</a></div>
+	</nav>
+</div>
+
+
+
+<script>feather.replace()</script>
+</body>
+</html>
